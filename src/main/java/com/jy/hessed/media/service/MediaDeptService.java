@@ -23,13 +23,13 @@ import java.util.stream.IntStream;
 @Service
 public class MediaDeptService {
 
-    private static final String CRAWLING_PATH = "https://search.naver.com/search.naver?sm=tab_hty.top&where=nexearch&query=";
+    private static final String CRAWLING_URL_PATH = "https://search.naver.com/search.naver?query=";
 
     public String searchLyrics(String query) {
 
         try {
-            String encodeQuery = URLEncoder.encode(query, "UTF-8");
-            String searchUrl = CRAWLING_PATH + encodeQuery + "&oquery=" + encodeQuery + "&tqi=iiSXqwqo15wssaAbRAVssssstMR-029864";
+
+            String searchUrl = CRAWLING_URL_PATH + URLEncoder.encode(query, "UTF-8");
             Document searchDoc = Jsoup.connect(searchUrl).get();
 
             Elements musicResultSearch = searchDoc.select("section.sc_new.sp_pmusic._fe_music_collection");
@@ -48,40 +48,47 @@ public class MediaDeptService {
                 singerList.add(element.getElementsByTag("div.dsc_area").select("span.name"));
             }
 
-            Elements lyricsElement = searchDoc.select("div.lyrics_txt._lyrics_txt").select("p.lyrics");
+//            Elements lyricsElement = searchDoc.select("div[class=lyrics_txt._lyrics_txt]").select("p.lyrics");
+            Elements lyricsElement = searchDoc.select("p[class=lyrics]");
 
-            List<List<String>> pairs = new ArrayList<>();
-            List<String> pair = new ArrayList<>();
+//            lyricsElement.stream().forEach(x -> {
+//                System.out.println(x.text());
+//            });
 
-            for (int i = 0; i < lyricsElement.size(); i += 2) {
-
-                pair.add(String.valueOf(lyricsElement.get(i).text()));
-
-                if (i + 1 < lyricsElement.size()) {
-                    pair.add(String.valueOf(lyricsElement.get(i + 1).text()));
-                }
-
-                pairs.add(pair);
-            }
-
-            List<String> resultList = new ArrayList<>();
-            StringBuilder result = new StringBuilder();
-
-            for (List<String> innerList : pairs) {
-
-                String joined = String.join("\n", innerList);
-
-                result.append(joined).append("\n");
-
-                resultList.add(String.valueOf(result));
-            }
-
-            for(String test : resultList) {
-                System.out.println(test);
-                System.out.println("@@@@@@@@@@@");
-            }
+//            List<List<String>> pairs = new ArrayList<>();
+//            List<String> pair = new ArrayList<>();
+//
+//            for (int i = 0; i < lyricsElement.size(); i += 2) {
+//
+//                pair.add(String.valueOf(lyricsElement.get(i).text()));
+//
+//                if (i + 1 < lyricsElement.size()) {
+//                    pair.add(String.valueOf(lyricsElement.get(i + 1).text()));
+//                }
+//
+//                pairs.add(pair);
+//            }
+//
+//            List<String> resultList = new ArrayList<>();
+//            StringBuilder result = new StringBuilder();
+//
+//            for (List<String> innerList : pairs) {
+//
+//                String joined = String.join("\n", innerList);
+//
+//                result.append(joined).append("\n");
+//
+//                resultList.add(String.valueOf(result));
+//            }
+//
+//            for (String test : resultList) {
+//                System.out.println(test);
+//                System.out.println("@@@@@@@@@@@");
+//            }
 
 //            makePpt(resultList);
+
+            getBoxSize();
 
         } catch (IOException e) {
             e.printStackTrace();
@@ -109,7 +116,7 @@ public class MediaDeptService {
 
                     newSlide.addShape(shape);
                     textBox.setText(lyricList.get(i).get(i));
-                    textBox.setAnchor(new Rectangle(100, 100, 200, 50));
+                    textBox.setAnchor(new Rectangle(100, 100, 965, 96));
                 }
             }
 
@@ -117,6 +124,30 @@ public class MediaDeptService {
 
             ppt.write(out);
             out.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void getBoxSize() {
+
+        try {
+
+            FileInputStream fis = new FileInputStream("/Users/cjy/2024 청년부.pptx");
+            XMLSlideShow ppt = new XMLSlideShow(fis);
+            fis.close();
+
+            XSLFSlide slide = ppt.getSlides().get(1);
+
+            for (XSLFShape shape : slide.getShapes()) {
+                if (shape instanceof XSLFTextShape) {
+                    XSLFTextShape textBox = (XSLFTextShape) shape;
+                    double width = textBox.getAnchor().getWidth();
+                    double height = textBox.getAnchor().getHeight();
+
+                    System.out.println(width + " x " + height);
+                }
+            }
         } catch (IOException e) {
             e.printStackTrace();
         }
