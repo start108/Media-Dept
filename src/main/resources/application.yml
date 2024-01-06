@@ -4,3 +4,7 @@ server:
 youtube:
   api:
     key: AIzaSyD_dLz1aHyVBR5B3hQAIkBePG9CO785Lbc
+
+naver:
+  crawling:
+    url: https://search.naver.com/search.naver?query=

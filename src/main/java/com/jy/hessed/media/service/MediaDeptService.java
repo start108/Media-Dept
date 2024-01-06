@@ -1,35 +1,34 @@
 package com.jy.hessed.media.service;
 
-import jakarta.servlet.http.HttpServletResponse;
 import org.apache.poi.xslf.usermodel.*;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
-import org.springframework.util.FileCopyUtils;
+import org.springframework.util.StringUtils;
 
 import java.awt.*;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.OutputStream;
 import java.net.URLEncoder;
-import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
-import java.util.stream.Collectors;
-import java.util.stream.IntStream;
+import java.util.Map;
 
 @Service
 public class MediaDeptService {
 
-    private static final String CRAWLING_URL_PATH = "https://search.naver.com/search.naver?query=";
+    @Value("${naver.crawling.url}")
+    private String crawlingUrl;
 
     public String searchLyrics(String query) {
 
         try {
 
-            String searchUrl = CRAWLING_URL_PATH + URLEncoder.encode(query, "UTF-8");
+            String searchUrl = crawlingUrl + URLEncoder.encode(query, "UTF-8");
             Document searchDoc = Jsoup.connect(searchUrl).get();
 
             Elements musicResultSearch = searchDoc.select("section.sc_new.sp_pmusic._fe_music_collection");
@@ -38,57 +37,36 @@ public class MediaDeptService {
                 return "조회된 결과가 없습니다.";
             }
 
-            Elements albumInfo = searchDoc.select("div.album_info").select("div.link_tit");
-            List<Elements> titleList = new ArrayList<>();
-            List<Elements> singerList = new ArrayList<>();
+            Elements musicElements = searchDoc.select("ul[class=music_list]");
 
-            // TODO 입력한 가수와 곡이 맞는지 체크
-            for (Element element : albumInfo) {
-                titleList.add(element.getElementsByTag("a").select("strong.tit"));
-                singerList.add(element.getElementsByTag("div.dsc_area").select("span.name"));
+            Map<String, Object> albumMap = new HashMap<>();
+
+            for(Element musicEl : musicElements) {
+
+                String title = musicEl.select("a[class=tit_area]").text();
+                String singer = musicEl.select("span[class=name]").select("a").text();
+                String date = musicEl.select("time[class=date]").text();
+                String lyrics = musicEl.select("p[class=lyrics]").text();
+
+                albumMap.put("title", title);
+                albumMap.put("singer", singer);
+                albumMap.put("date", date);
+
+                System.out.println(lyrics);
             }
 
+//            Elements albumInfo = searchDoc.select("div.album_info").select("div.link_tit");
+//            List<Elements> titleList = new ArrayList<>();
+//            List<Elements> lyricsList = new ArrayList<>();
+//
+//            for (Element element : albumInfo) {
+//                titleList.add(element.select("strong.tit"));
+//            }
+
 //            Elements lyricsElement = searchDoc.select("div[class=lyrics_txt._lyrics_txt]").select("p.lyrics");
-            Elements lyricsElement = searchDoc.select("p[class=lyrics]");
-
-//            lyricsElement.stream().forEach(x -> {
-//                System.out.println(x.text());
-//            });
-
-//            List<List<String>> pairs = new ArrayList<>();
-//            List<String> pair = new ArrayList<>();
-//
-//            for (int i = 0; i < lyricsElement.size(); i += 2) {
-//
-//                pair.add(String.valueOf(lyricsElement.get(i).text()));
-//
-//                if (i + 1 < lyricsElement.size()) {
-//                    pair.add(String.valueOf(lyricsElement.get(i + 1).text()));
-//                }
-//
-//                pairs.add(pair);
-//            }
-//
-//            List<String> resultList = new ArrayList<>();
-//            StringBuilder result = new StringBuilder();
-//
-//            for (List<String> innerList : pairs) {
-//
-//                String joined = String.join("\n", innerList);
-//
-//                result.append(joined).append("\n");
-//
-//                resultList.add(String.valueOf(result));
-//            }
-//
-//            for (String test : resultList) {
-//                System.out.println(test);
-//                System.out.println("@@@@@@@@@@@");
-//            }
+//            Elements lyricsElement = searchDoc.select("p[class=lyrics]");
 
 //            makePpt(resultList);
-
-            getBoxSize();
 
         } catch (IOException e) {
             e.printStackTrace();
@@ -116,7 +94,14 @@ public class MediaDeptService {
 
                     newSlide.addShape(shape);
                     textBox.setText(lyricList.get(i).get(i));
-                    textBox.setAnchor(new Rectangle(100, 100, 965, 96));
+                    /**
+                     * 실제 텍스트 값
+                     * Width : 964.9653543307087
+                     * Height : 94.51409448818897
+                     * X : -4.965354330708662
+                     * Y : 2.4859055118110236
+                     **/
+                    textBox.setAnchor(new Rectangle(-5, 2, 965, 96));
                 }
             }
 
@@ -144,8 +129,10 @@ public class MediaDeptService {
                     XSLFTextShape textBox = (XSLFTextShape) shape;
                     double width = textBox.getAnchor().getWidth();
                     double height = textBox.getAnchor().getHeight();
+                    double x = textBox.getAnchor().getX();
+                    double y = textBox.getAnchor().getY();
 
-                    System.out.println(width + " x " + height);
+                    System.out.println(width + " x " + height + "\n" + x + ", " + y);
                 }
             }
         } catch (IOException e) {
