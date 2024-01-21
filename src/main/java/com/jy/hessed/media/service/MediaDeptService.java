@@ -1,17 +1,14 @@
 package com.jy.hessed.media.service;
 
-import org.apache.poi.xslf.usermodel.*;
+import com.jy.hessed.media.model.Album;
+import com.jy.hessed.media.util.PptUtil;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
-import org.springframework.util.StringUtils;
 
-import java.awt.*;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.net.URLEncoder;
 import java.util.ArrayList;
@@ -30,135 +27,61 @@ public class MediaDeptService {
         try {
 
             String searchUrl = crawlingUrl + URLEncoder.encode(query, "UTF-8");
-            Document searchDoc = Jsoup.connect(searchUrl).get();
+            Document searchDocument = Jsoup.connect(searchUrl).get();
 
-            Elements musicResultSearch = searchDoc.select("section.sc_new.sp_pmusic._fe_music_collection");
+            Elements musicResultSearch = searchDocument.select("section.sc_new.sp_pmusic._fe_music_collection");
 
+            // TODO Exception
             if (musicResultSearch.size() == 0) {
                 return "조회된 결과가 없습니다.";
             }
 
-            Elements musicElements = searchDoc.select("ul[class=music_list]");
+            Elements listEl = musicResultSearch.select("li.list_item._sap_item");
 
+            List<Album> albumList = new ArrayList<>();
 
-            Map<String, Object> albumMap = new HashMap<>();
-            List<Map<String, Object>> albumList = new ArrayList<>();
-            List<String> lyricsList = new ArrayList<>();
+            for(Element list : listEl) {
 
-            for(Element musicEl : musicElements) {
+                String title = list.select("a[class=tit_area]").text();
+                String singer = list.select("span[class=name]").select("a").text();
+                String date = list.select("time[class=date]").text();
+                String lyrics = list.select("p[class=lyrics]").html();
 
-                Elements listEl = musicEl.select("li.list_item._sap_item");
+                List<String> lyricsPairsList = new ArrayList<>();
 
-                for(Element list : listEl) {
+                if(!lyrics.equals("") && lyrics.contains("\n")) {
 
-                    String title = list.select("a[class=tit_area]").text();
-                    String singer = list.select("span[class=name]").select("a").text();
-                    String date = list.select("time[class=date]").text();
-                    String lyrics = list.select("p[class=lyrics]").html();
+                    String[] lines = lyrics.split("\\n");
 
-                    albumMap.put("title", title);
-                    albumMap.put("singer", singer);
-                    albumMap.put("date", date);
-                    albumMap.put("lyrics", lyrics);
-
-                    albumList.add(albumMap);
+                    for (int i = 0; i < lines.length; i += 2) {
+                        if (i + 1 < lines.length) {
+                            String pair = lines[i] + "\n" + lines[i + 1];
+                            lyricsPairsList.add(pair);
+                        } else {
+                            lyricsPairsList.add(lines[i]);
+                        }
+                    }
+                } else {
+                    // TODO \\n 없을 경우 처리!
                 }
+
+                Album album = Album.builder()
+                        .title(title)
+                        .singer(singer)
+                        .date(date)
+                        .lyrics(lyricsPairsList)
+                        .build();
+
+                albumList.add(album);
             }
 
-            for(Map<String, Object> map : albumList) {
-
-                for (Map.Entry<String, Object> entry : map.entrySet()) {
-                    System.out.println("[key]:" + entry.getKey() + ", [value]:" + entry.getValue());
-                }
-            }
-
-            makePpt(albumList);
+            PptUtil.makePpt(albumList);
+            // PptUtil.getBox();
 
         } catch (IOException e) {
             e.printStackTrace();
         }
 
         return "";
-    }
-
-    private void makePpt(List<Map<String, Object>> albumList) throws IOException {
-
-        try {
-            FileInputStream fis = new FileInputStream("/Users/cjy/test.pptx");
-            XMLSlideShow ppt = new XMLSlideShow(fis);
-
-            fis.close();
-
-            XSLFSlide slideTemplete = ppt.getSlides().get(0);
-
-            // Create a text box
-            XSLFTextBox textBox = slideTemplete.createTextBox();
-            textBox.setText("Text at custom position");
-
-            // Set the position of the text box
-            textBox.setAnchor(new java.awt.Rectangle(100, 100, 200, 50));
-
-//            for (int i = 1; i <= albumList.size(); i++) {
-//
-//                for (XSLFShape shape : slideTemplete.getShapes()) {
-//
-//                    XSLFSlide newSlide = ppt.createSlide();
-//                    XSLFTextBox textBox = newSlide.createTextBox();
-//
-////                    newSlide.addShape(shape);
-//////                    textBox.setText((String) albumList.get(i).get("lyrics"));
-////                    textBox.setText("test");
-////                    /**
-////                     * 실제 텍스트 값
-////                     * Width : 964.9653543307087
-////                     * Height : 94.51409448818897
-////                     * X : -4.965354330708662
-////                     * Y : 2.4859055118110236
-////                     **/
-////                    textBox.setAnchor(new Rectangle(-5, 2, 965, 96));
-//
-//                    textBox.setText("Text at custom position");
-//
-//                    // Set the position of the text box
-//                    textBox.setAnchor(new java.awt.Rectangle(100, 100, 200, 50));
-//                }
-//            }
-
-            FileOutputStream out = new FileOutputStream("/Users/cjy/modified.pptx");
-
-            ppt.write(out);
-            out.close();
-
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-
-    private void getBoxSize() {
-
-        try {
-
-            FileInputStream fis = new FileInputStream("/Users/cjy/2024 청년부.pptx");
-            XMLSlideShow ppt = new XMLSlideShow(fis);
-            fis.close();
-
-            XSLFSlide slide = ppt.getSlides().get(1);
-
-            for (XSLFShape shape : slide.getShapes()) {
-
-                if (shape instanceof XSLFTextShape) {
-
-                    XSLFTextShape textBox = (XSLFTextShape) shape;
-                    double width = textBox.getAnchor().getWidth();
-                    double height = textBox.getAnchor().getHeight();
-                    double x = textBox.getAnchor().getX();
-                    double y = textBox.getAnchor().getY();
-
-                    System.out.println(width + " x " + height + "\n" + x + ", " + y);
-                }
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
     }
 }

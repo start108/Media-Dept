@@ -19,10 +19,11 @@ import java.util.List;
 @Service
 public class YouTubeService {
 
-    @Value("${youtube.api.key}")
+//    @Value("${youtube.api.key}")
     private String apiKey;
 
     public String searchVideo(String query) throws IOException {
+
         // JSON 데이터를 처리하기 위한 JsonFactory 객체 생성
         JsonFactory jsonFactory = new JacksonFactory();
         HttpTransport httpTransport = new NetHttpTransport();
