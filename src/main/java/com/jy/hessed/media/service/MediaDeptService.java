@@ -12,9 +12,7 @@ import org.springframework.stereotype.Service;
 import java.io.IOException;
 import java.net.URLEncoder;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 @Service
 public class MediaDeptService {
@@ -31,7 +29,7 @@ public class MediaDeptService {
 
             Elements musicResultSearch = searchDocument.select("section.sc_new.sp_pmusic._fe_music_collection");
 
-            // TODO Exception
+            // TODO Exception -> 공통에서 처리 예정
             if (musicResultSearch.size() == 0) {
                 return "조회된 결과가 없습니다.";
             }
@@ -75,8 +73,13 @@ public class MediaDeptService {
                 albumList.add(album);
             }
 
+            // TODO
+            if(albumList.size() == 0) {
+                return "조회된 결과가 없습니다.";
+            }
+
             PptUtil.makePpt(albumList);
-            // PptUtil.getBox();
+            PptUtil.getBox();
 
         } catch (IOException e) {
             e.printStackTrace();

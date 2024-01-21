@@ -1,15 +1,17 @@
 package com.jy.hessed.media.util;
 
 import com.jy.hessed.media.model.Album;
-import org.apache.poi.sl.usermodel.VerticalAlignment;
+import org.apache.poi.sl.usermodel.TextParagraph;
+import org.apache.poi.sl.usermodel.TextShape;
 import org.apache.poi.xslf.usermodel.*;
+import org.apache.poi.xwpf.usermodel.ParagraphAlignment;
 
 import java.awt.*;
+import java.awt.geom.Rectangle2D;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.List;
-import java.util.Map;
 
 public class PptUtil {
 
@@ -26,55 +28,42 @@ public class PptUtil {
 
             fis.close();
 
-            XSLFSlide slideTemplete = ppt.getSlides().get(0);
-            XSLFTextBox textBox = slideTemplete.createTextBox();
+            XSLFSlide slideTemplate = ppt.getSlides().get(0);
+            XSLFSlideLayout slideLayout = slideTemplate.getSlideLayout();
 
-            textBox.setText("Text in master slide text box");
-            //textBox.setFillColor(new Color(13, 13, 13));
+            for (Album album : albumList) {
 
-            /* 폰트 세팅 */
-            for (XSLFTextParagraph paragraph : textBox.getTextParagraphs()) {
-                for (XSLFTextRun run : paragraph.getTextRuns()) {
+                List<String> lyricsList = album.getLyrics();
+
+                int lastIndex = lyricsList.size() - 1;
+                int currentIndex = 0;
+
+                XSLFSlide slide = null;
+
+                for (String lyric : lyricsList) {
+
+                    slide = ppt.createSlide(slideLayout);
+                    XSLFTextBox textBox = slide.createTextBox();
+
+                    textBox.setAnchor(new Rectangle2D.Double(-4.965354330708662, 2.4859055118110236, 964.9653543307087, 94.51409448818897));
+                    textBox.setTextAutofit(XSLFTextBox.TextAutofit.NONE);
+                    textBox.setWordWrap(true);
+
+                    XSLFTextParagraph paragraph = textBox.addNewTextParagraph();
+                    XSLFTextRun run = paragraph.addNewTextRun();
+                    run.setText(lyric);
                     run.setFontFamily(FONT_FAMILY);
                     run.setFontSize(FONT_SIZE);
+
+                    paragraph.setTextAlign(TextParagraph.TextAlign.CENTER);
+
+                    if(currentIndex == lastIndex) {
+                        slide = ppt.createSlide(slideLayout);
+                    }
+
+                    currentIndex++;
                 }
             }
-            /**
-             * 실제 텍스트 값
-             * Width : 964.9653543307087
-             * Height : 94.51409448818897
-             * X : -4.965354330708662
-             * Y : 2.4859055118110236
-             **/
-            textBox.setAnchor(new Rectangle(-5, 2, 965, 96));
-            textBox.setVerticalAlignment(VerticalAlignment.MIDDLE);
-            textBox.setHorizontalCentered(true);
-
-//            for (int i = 1; i <= albumList.size(); i++) {
-//
-//                for (XSLFShape shape : slideTemplete.getShapes()) {
-//
-//                    XSLFSlide newSlide = ppt.createSlide();
-//                    XSLFTextBox textBox = newSlide.createTextBox();
-//
-////                    newSlide.addShape(shape);
-//////                    textBox.setText((String) albumList.get(i).get("lyrics"));
-////                    textBox.setText("test");
-////                    /**
-////                     * 실제 텍스트 값
-////                     * Width : 964.9653543307087
-////                     * Height : 94.51409448818897
-////                     * X : -4.965354330708662
-////                     * Y : 2.4859055118110236
-////                     **/
-////                    textBox.setAnchor(new Rectangle(-5, 2, 965, 96));
-//
-//                    textBox.setText("Text at custom position");
-//
-//                    // Set the position of the text box
-//                    textBox.setAnchor(new java.awt.Rectangle(100, 100, 200, 50));
-//                }
-//            }
 
             FileOutputStream out = new FileOutputStream("/Users/cjy/modified.pptx");
 
@@ -95,7 +84,7 @@ public class PptUtil {
             XMLSlideShow ppt = new XMLSlideShow(fis);
             fis.close();
 
-            XSLFSlide slide = ppt.getSlides().get(0);
+            XSLFSlide slide = ppt.getSlides().get(1);
 
             for (XSLFShape shape : slide.getShapes()) {
 

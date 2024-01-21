@@ -1,9 +1,13 @@
 package com.jy.hessed.media.model;
 
 import lombok.Builder;
+import lombok.Getter;
+import lombok.Setter;
 
 import java.util.List;
 
+@Getter
+@Setter
 @Builder
 public class Album {
     private String title;
