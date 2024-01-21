@@ -2,15 +2,15 @@ package com.jy.hessed.media.util;
 
 import com.jy.hessed.media.model.Album;
 import org.apache.poi.sl.usermodel.TextParagraph;
-import org.apache.poi.sl.usermodel.TextShape;
 import org.apache.poi.xslf.usermodel.*;
-import org.apache.poi.xwpf.usermodel.ParagraphAlignment;
 
 import java.awt.*;
 import java.awt.geom.Rectangle2D;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 public class PptUtil {
@@ -18,6 +18,10 @@ public class PptUtil {
     private static final String FONT_FAMILY = "에스코어 드림 6 Bold";
 
     private static final double FONT_SIZE = 36.0;
+
+    private static final String EXTENSION = ".pptx";
+
+    private static final String UPPER_DEPT = " 청년부 예배";
 
     public static void makePpt(List<Album> albumList) throws IOException {
 
@@ -57,7 +61,7 @@ public class PptUtil {
 
                     paragraph.setTextAlign(TextParagraph.TextAlign.CENTER);
 
-                    if(currentIndex == lastIndex) {
+                    if (currentIndex == lastIndex) {
                         slide = ppt.createSlide(slideLayout);
                     }
 
@@ -65,7 +69,11 @@ public class PptUtil {
                 }
             }
 
-            FileOutputStream out = new FileOutputStream("/Users/cjy/modified.pptx");
+            LocalDate now = LocalDate.now();
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy.MM.dd");
+            String currentDate = now.format(formatter);
+
+            FileOutputStream out = new FileOutputStream("/Users/cjy/" + currentDate + UPPER_DEPT + EXTENSION);
 
             ppt.write(out);
             out.close();

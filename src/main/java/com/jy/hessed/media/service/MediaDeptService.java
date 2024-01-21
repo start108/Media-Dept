@@ -20,7 +20,7 @@ public class MediaDeptService {
     @Value("${naver.crawling.url}")
     private String crawlingUrl;
 
-    public String searchLyrics(String query) {
+    public String callAlbumList(String query) {
 
         try {
 

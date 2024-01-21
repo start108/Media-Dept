@@ -11,8 +11,8 @@ public class MediaDeptController {
 
     private final MediaDeptService mediaDeptService;
 
-    @GetMapping(value = "/search")
-    public String searchLyrics() {
-        return mediaDeptService.searchLyrics("주를 찾는 모든 자들이");
+    @GetMapping(value = "/album")
+    public String callAlbumList() {
+        return mediaDeptService.callAlbumList("나로부터 시작되리"); // 주를 찾는 모든 자들이 그 사랑
     }
 }
