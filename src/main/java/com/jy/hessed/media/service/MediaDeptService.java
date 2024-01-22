@@ -49,32 +49,33 @@ public class MediaDeptService {
                 String singer = list.select("span[class=name]").select("a").text();
                 String date = list.select("time[class=date]").text();
                 String lyrics = list.select("p[class=lyrics]").html();
-                String base64Image = list.select("a.jacket_area.music_thumb._sap_trigger img").first().attr("src");
+                // String base64Image = list.select("a.jacket_area.music_thumb._sap_trigger img").first().attr("src");
 
-                List<String> lyricsPairsList = new ArrayList<>();
-
-                if(!lyrics.equals("") && lyrics.contains("\n")) {
-
-                    String[] lines = lyrics.split("\\n");
-
-                    for (int i = 0; i < lines.length; i += 2) {
-                        if (i + 1 < lines.length) {
-                            String pair = lines[i] + "\n" + lines[i + 1];
-                            lyricsPairsList.add(pair);
-                        } else {
-                            lyricsPairsList.add(lines[i]);
-                        }
-                    }
-                } else {
-                    // TODO \\n 없을 경우 처리
-                    // return "조회된 가사가 없습니다.";
-                }
+//                List<String> lyricsPairsList = new ArrayList<>();
+//
+//                if(!lyrics.equals("") && lyrics.contains("\n")) {
+//
+//                    String[] lines = lyrics.split("\\n");
+//
+//                    for (int i = 0; i < lines.length; i += 2) {
+//                        if (i + 1 < lines.length) {
+//                            String pair = lines[i] + "\n" + lines[i + 1];
+//                            lyricsPairsList.add(pair);
+//                        } else {
+//                            lyricsPairsList.add(lines[i]);
+//                        }
+//                    }
+//                } else {
+//                    // TODO \\n 없을 경우 처리
+//                    // return "조회된 가사가 없습니다.";
+//                }
 
                 Album album = Album.builder()
                         .title(title)
                         .singer(singer)
                         .date(date)
-                        .lyrics(lyricsPairsList)
+                        .lyric(lyrics)
+//                        .lyrics(lyricsPairsList)
                         .build();
 
                 albumList.add(album);

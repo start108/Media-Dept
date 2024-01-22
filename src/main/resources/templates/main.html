@@ -12,19 +12,34 @@
         color: #666;
         font: 14px/24px "Open Sans", "HelveticaNeue-Light", "Helvetica Neue Light", "Helvetica Neue", Helvetica, Arial, "Lucida Grande", Sans-Serif;
     }
+    div {
+        width: 100%;
+        height: 500px;
+        position: relative;
+    }
+    div.left {
+        width: 60%;
+        float: left;
+        position: relative;
+    }
+    div.right {
+        width: 35%;
+        float: right;
+        position: relative;
+    }
     table {
         border-collapse: separate;
         border-spacing: 0;
         width: 100%;
     }
-    th,
-    td {
+    th, td {
         padding: 6px 15px;
+        text-align: center;
     }
     th {
         background: #42444e;
         color: #fff;
-        text-align: left;
+        text-align: center;
     }
     tr:first-child th:first-child {
         border-top-left-radius: 6px;
@@ -48,58 +63,82 @@
     tr:last-child td:last-child {
         border-bottom-right-radius: 6px;
     }
+    div.btn-right-area {
+        float: right;
+    }
 </style>
 <body>
 <!--<p th:text="'테스트 ' + ${data}">테스트 중</p>-->
 <input type="text" id="title" value="주를 찾는 모든 자들이">
 <button type="button" id="getAlbum">조회</button>
-<button type="button" onclick="addRow();">+</button>
-<div style="margin-top: 10px;">
-    <table>
-        <thead>
-        <tr>
-            <th></th>
-            <th>제목</th>
-            <th>가수</th>
-            <th>발매일</th>
-            <th>가사</th>
-        </tr>
-        </thead>
-        <tbody id="listAlbum"></tbody>
-    </table>
-</div>
-<div style="margin-top: 10px;">
-    <table>
-        <thead>
-        <tr>
-            <th></th>
-            <th>제목</th>
-            <th>가수</th>
-            <th>발매일</th>
-            <th>가사</th>
-        </tr>
-        </thead>
-        <tbody id="listAlbum2"></tbody>
-    </table>
+<button type="button" id="">다운로드</button>
+<button type="button" id="addRow">+</button>
+<button type="button" id="delRow">-</button>
+<div>
+    <div class="left" style="padding: 10px;">
+<!--        <div class="btn-right-area">-->
+<!--            -->
+<!--        </div>-->
+        <table id="tblListAlbum">
+            <thead>
+            <tr>
+                <th></th>
+                <th>No</th>
+                <th>앨범명</th>
+                <th>가수</th>
+                <th>발매일</th>
+            </tr>
+            </thead>
+            <tbody id="listMainAlbum"></tbody>
+        </table>
+    </div>
+    <div class="right" style="padding: 10px;">
+        <table>
+            <thead>
+            <tr>
+                <th></th>
+                <th>No</th>
+                <th>앨범명</th>
+                <th>가수</th>
+            </tr>
+            </thead>
+            <tbody id="listSubAlbum"></tbody>
+        </table>
+    </div>
 </div>
 </body>
 </html>
 <script th:inline="javascript">
     const media = {
-
+        albumList: [],
         init: function () {
 
             $('#getAlbum').on('click', () => this.getAlbumList());
 
-            $('.chkAlbum').on('click', function () {
+            $('#addRow').on('click', (item, index) => this.addRow(index));
+
+            $('#listMainAlbum').on('click', '.chkAlbum', function () {
 
                 const row = $(this).closest('tr');
 
-                // 체크박스의 상태에 따라 행을 선택 또는 선택 해제
                 if ($(this).prop('checked')) {
                     row.addClass('selectedRow');
                 } else {
                     row.removeClass('selectedRow');
+                }
+            });
+
+            $('#listMainAlbum').on('click', 'tr', function () {
+
+                const row = $(this).closest('tr');
+                const chkbox = $(this).find('td:first-child :checkbox');
+
+                if($(this).hasClass('selectedRow')) {
+                    chkbox.prop('checked', false);
+                    row.removeClass('selectedRow');
+                } else {
+                    row.addClass('selectedRow');
+                    chkbox.prop('checked', true);
                 }
             });
         },
@@ -111,34 +150,49 @@
                 },
                 url: '/album',
                 type: 'GET',
-                success: function (data){
+                success: (data) => {
+
+                    this.albumList = data.albumList;
+
+                    $("#listMainAlbum").empty();
 
                     let innerHTML = "";
 
-                    for(key in data.albumList){
-                        debugger;
-                        const lyrics = data.albumList[key].lyrics[0].replaceAll('\n', '<br>');
+                    data.albumList.forEach((album, index) => {
+
+                        let no = index + 1;
 
                         innerHTML += '<tr>';
-                        innerHTML +=    '<td><input type = "checkbox" id = "' + key + '" class="chkAlbum"></td>';
-                        innerHTML +=    '<td>' + data.albumList[key].title + '</td>';
-                        innerHTML +=    '<td>' + data.albumList[key].singer + '</td>';
-                        innerHTML +=    '<td>' + data.albumList[key].date + '</td>';
-                        innerHTML +=    '<td>' + lyrics + '</td>';
+                        innerHTML +=    '<td><input type = "checkbox" id = "chkMainAlbum' + index + '" class="chkAlbum"></td>';
+                        innerHTML +=    '<td>' + no + '</td>';
+                        innerHTML +=    '<td>' + album.title + '</td>';
+                        innerHTML +=    '<td>' + album.singer + '</td>';
+                        innerHTML +=    '<td>' + album.date + '</td>';
+                        // innerHTML +=    '<td>' + album.lyric.replaceAll("\n", "<br>") + '</td>';
                         innerHTML += '</tr>';
-                    }
+                        innerHTML += '<tr>';
+                        innerHTML +=    '<td colspan="5"><button type="button" id = "btnLyric' + index + '">↓</button></td>';
+                        innerHTML += '</tr>';
+                    });
 
-                    $("#listAlbum").empty();
-                    $("#listAlbum").append(innerHTML);
+                    $("#listMainAlbum").append(innerHTML);
                 },
                 error: function (error){
-                    console.error(error);
+                    alert("오류가 발생하였습니다.")
                 }
             });
-
         },
         addRow: function () {
 
+            this.albumList.filter((album, index) => $('#listMainAlbum tr.selectedRow').index() == index).forEach((item, index) => {
+
+                let no = index + 1;
+
+                $("#listSubAlbum").append('<td><input type = "checkbox" id = "chkSubAlbum' + index + '" class="chkAlbum"></td>');
+                $("#listSubAlbum").append('<td>' + no + '</td>');
+                $("#listSubAlbum").append('<td>' + item.title + '</td>');
+                $("#listSubAlbum").append('<td>' + item.singer + '</td>');
+            });
         },
     };
 

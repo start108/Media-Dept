@@ -11,5 +11,6 @@ public class Album {
     private String title;
     private String singer;
     private String date;
+    private String lyric;
     private List<String> lyrics;
 }
