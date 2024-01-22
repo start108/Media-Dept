@@ -3,9 +3,146 @@
 <head>
     <meta charset="UTF-8">
     <title>Test</title>
+<!--    <link th:href="@{/css/main.css}" rel="stylesheet" />-->
+<!--    <script type="text/javascript" th:src="@{/js/main.js}"></script>-->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
 </head>
+<style>
+    body {
+        color: #666;
+        font: 14px/24px "Open Sans", "HelveticaNeue-Light", "Helvetica Neue Light", "Helvetica Neue", Helvetica, Arial, "Lucida Grande", Sans-Serif;
+    }
+    table {
+        border-collapse: separate;
+        border-spacing: 0;
+        width: 100%;
+    }
+    th,
+    td {
+        padding: 6px 15px;
+    }
+    th {
+        background: #42444e;
+        color: #fff;
+        text-align: left;
+    }
+    tr:first-child th:first-child {
+        border-top-left-radius: 6px;
+    }
+    tr:first-child th:last-child {
+        border-top-right-radius: 6px;
+    }
+    td {
+        border-right: 1px solid #c6c9cc;
+        border-bottom: 1px solid #c6c9cc;
+    }
+    td:first-child {
+        border-left: 1px solid #c6c9cc;
+    }
+    .selectedRow {
+        background: #eaeaed;
+    }
+    tr:last-child td:first-child {
+        border-bottom-left-radius: 6px;
+    }
+    tr:last-child td:last-child {
+        border-bottom-right-radius: 6px;
+    }
+</style>
 <body>
-<p th:text="'테스트 ' + ${data}">테스트 중</p>
-<button type="button">조회</button>
+<!--<p th:text="'테스트 ' + ${data}">테스트 중</p>-->
+<input type="text" id="title" value="주를 찾는 모든 자들이">
+<button type="button" id="getAlbum">조회</button>
+<button type="button" onclick="addRow();">+</button>
+<div style="margin-top: 10px;">
+    <table>
+        <thead>
+        <tr>
+            <th></th>
+            <th>제목</th>
+            <th>가수</th>
+            <th>발매일</th>
+            <th>가사</th>
+        </tr>
+        </thead>
+        <tbody id="listAlbum"></tbody>
+    </table>
+</div>
+<div style="margin-top: 10px;">
+    <table>
+        <thead>
+        <tr>
+            <th></th>
+            <th>제목</th>
+            <th>가수</th>
+            <th>발매일</th>
+            <th>가사</th>
+        </tr>
+        </thead>
+        <tbody id="listAlbum2"></tbody>
+    </table>
+</div>
 </body>
 </html>
+<script th:inline="javascript">
+    const media = {
+
+        init: function () {
+
+            $('#getAlbum').on('click', () => this.getAlbumList());
+
+            $('.chkAlbum').on('click', function () {
+
+                const row = $(this).closest('tr');
+
+                // 체크박스의 상태에 따라 행을 선택 또는 선택 해제
+                if ($(this).prop('checked')) {
+                    row.addClass('selectedRow');
+                } else {
+                    row.removeClass('selectedRow');
+                }
+            });
+        },
+        getAlbumList: function () {
+
+            $.ajax({
+                data: {
+                    title: $("#title").val()
+                },
+                url: '/album',
+                type: 'GET',
+                success: function (data){
+
+                    let innerHTML = "";
+
+                    for(key in data.albumList){
+                        debugger;
+                        const lyrics = data.albumList[key].lyrics[0].replaceAll('\n', '<br>');
+
+                        innerHTML += '<tr>';
+                        innerHTML +=    '<td><input type = "checkbox" id = "' + key + '" class="chkAlbum"></td>';
+                        innerHTML +=    '<td>' + data.albumList[key].title + '</td>';
+                        innerHTML +=    '<td>' + data.albumList[key].singer + '</td>';
+                        innerHTML +=    '<td>' + data.albumList[key].date + '</td>';
+                        innerHTML +=    '<td>' + lyrics + '</td>';
+                        innerHTML += '</tr>';
+                    }
+
+                    $("#listAlbum").empty();
+                    $("#listAlbum").append(innerHTML);
+                },
+                error: function (error){
+                    console.error(error);
+                }
+            });
+
+        },
+        addRow: function () {
+
+        },
+    };
+
+    $(function () {
+        media.init();
+    });
+</script>

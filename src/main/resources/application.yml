@@ -1,6 +1,13 @@
 server:
   port: 9000
 
+spring:
+  thymeleaf:
+    cache: false
+  devtools:
+    restart:
+      enabled: true
+
 naver:
   crawling:
     url: https://search.naver.com/search.naver?query=
