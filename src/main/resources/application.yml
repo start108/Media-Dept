@@ -8,6 +8,9 @@ spring:
     restart:
       enabled: true
 
+#logging:
+#  config: classpath:log4j2.xml
+
 naver:
   crawling:
     url: https://search.naver.com/search.naver?query=

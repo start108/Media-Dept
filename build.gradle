@@ -15,6 +15,12 @@ repositories {
 	mavenCentral()
 }
 
+//configurations {
+//	all {
+//		exclude group: 'org.springframework.boot', module: 'spring-boot-starter-logging'
+//	}
+//}
+
 dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-web'
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
@@ -36,6 +42,10 @@ dependencies {
 	implementation group: 'org.apache.poi', name: 'poi-ooxml', version: '4.1.2'
 	/* Thymeleaf */
 	implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
+	/* log4j2 */
+//	implementation 'org.springframework.boot:spring-boot-starter-log4j2'
+//	testImplementation 'org.springframework.boot:spring-boot-starter-log4j2'
+//	implementation 'org.apache.logging.log4j:log4j-web:2.12.1'
 }
 
 tasks.named('test') {

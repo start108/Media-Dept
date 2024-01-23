@@ -3,9 +3,11 @@ package com.jy.hessed.media.controller;
 import com.jy.hessed.media.dto.MediaDTO;
 import com.jy.hessed.media.service.MediaDeptService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import java.io.IOException;
+import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequiredArgsConstructor
@@ -16,5 +18,10 @@ public class MediaDeptController {
     @GetMapping(value = "/album")
     public MediaDTO callAlbumList(@RequestParam("title") String title) {
         return mediaDeptService.callAlbumList(title);
+    }
+
+    @PostMapping(value = "/download")
+    public MediaDTO makePpt(@RequestBody List<Map<String, Object>> albumList) throws IOException {
+        return mediaDeptService.makePpt(albumList);
     }
 }

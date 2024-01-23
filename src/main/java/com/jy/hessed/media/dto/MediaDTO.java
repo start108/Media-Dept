@@ -1,13 +1,13 @@
 package com.jy.hessed.media.dto;
 
-import com.jy.hessed.media.model.Album;
 import lombok.Builder;
 import lombok.Data;
 
 import java.util.List;
+import java.util.Map;
 
 @Data
 @Builder
 public class MediaDTO {
-    private List<Album> albumList;
+    private List<Map<String, Object>> albumList;
 }

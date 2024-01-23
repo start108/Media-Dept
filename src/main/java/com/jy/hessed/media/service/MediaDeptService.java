@@ -1,8 +1,8 @@
 package com.jy.hessed.media.service;
 
 import com.jy.hessed.media.dto.MediaDTO;
-import com.jy.hessed.media.model.Album;
 import com.jy.hessed.media.util.PptUtil;
+import lombok.extern.slf4j.Slf4j;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -11,15 +11,14 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
-import java.net.URL;
-import java.net.URLDecoder;
 import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
-import java.util.Base64;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Service
+@Slf4j
 public class MediaDeptService {
 
     @Value("${naver.crawling.url}")
@@ -34,16 +33,18 @@ public class MediaDeptService {
 
             Elements musicResultSearch = searchDocument.select("section.sc_new.sp_pmusic._fe_music_collection");
 
-            // TODO Exception -> 공통에서 에러메세지 처리 예정
+            // TODO
             if (musicResultSearch.size() == 0) {
-                // return "조회된 결과가 없습니다.";
             }
 
             Elements listEl = musicResultSearch.select("li.list_item._sap_item");
 
-            List<Album> albumList = new ArrayList<>();
+            List<Map<String, Object>> albumList = new ArrayList<>();
+            Map<String, Object> album = null;
 
             for(Element list : listEl) {
+
+                album = new HashMap<>();
 
                 String title = list.select("a[class=tit_area]").text();
                 String singer = list.select("span[class=name]").select("a").text();
@@ -51,49 +52,30 @@ public class MediaDeptService {
                 String lyrics = list.select("p[class=lyrics]").html();
                 // String base64Image = list.select("a.jacket_area.music_thumb._sap_trigger img").first().attr("src");
 
-//                List<String> lyricsPairsList = new ArrayList<>();
-//
-//                if(!lyrics.equals("") && lyrics.contains("\n")) {
-//
-//                    String[] lines = lyrics.split("\\n");
-//
-//                    for (int i = 0; i < lines.length; i += 2) {
-//                        if (i + 1 < lines.length) {
-//                            String pair = lines[i] + "\n" + lines[i + 1];
-//                            lyricsPairsList.add(pair);
-//                        } else {
-//                            lyricsPairsList.add(lines[i]);
-//                        }
-//                    }
-//                } else {
-//                    // TODO \\n 없을 경우 처리
-//                    // return "조회된 가사가 없습니다.";
-//                }
-
-                Album album = Album.builder()
-                        .title(title)
-                        .singer(singer)
-                        .date(date)
-                        .lyric(lyrics)
-//                        .lyrics(lyricsPairsList)
-                        .build();
+                album.put("title", title);
+                album.put("singer", singer);
+                album.put("date", date);
+                album.put("lyrics", lyrics);
 
                 albumList.add(album);
             }
 
             // TODO
             if(albumList.size() == 0) {
-                // return "조회된 결과가 없습니다.";
             }
-
-//            PptUtil.makePpt(albumList);
-//            PptUtil.getBox();
 
             return MediaDTO.builder().albumList(albumList).build();
 
         } catch (IOException e) {
             e.printStackTrace();
         }
+
+        return MediaDTO.builder().build();
+    }
+
+    public MediaDTO makePpt(List<Map<String, Object>> albumList) throws IOException {
+
+        PptUtil.makePpt(albumList);
 
         return MediaDTO.builder().build();
     }

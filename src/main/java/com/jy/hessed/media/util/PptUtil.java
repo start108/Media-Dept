@@ -1,6 +1,6 @@
 package com.jy.hessed.media.util;
 
-import com.jy.hessed.media.model.Album;
+import com.jy.hessed.media.constant.MediaConstants;
 import org.apache.poi.sl.usermodel.TextParagraph;
 import org.apache.poi.xslf.usermodel.*;
 
@@ -13,18 +13,11 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 public class PptUtil {
 
-    private static final String FONT_FAMILY = "에스코어 드림 6 Bold";
-
-    private static final double FONT_SIZE = 36.0;
-
-    private static final String EXTENSION = ".pptx";
-
-    private static final String UPPER_DEPT = " 청년부 예배";
-
-    public static void makePpt(List<Album> albumList) throws IOException {
+    public static void makePpt(List<Map<String, Object>> albumList) throws IOException {
 
         try {
 
@@ -36,16 +29,39 @@ public class PptUtil {
             XSLFSlide slideTemplate = ppt.getSlides().get(0);
             XSLFSlideLayout slideLayout = slideTemplate.getSlideLayout();
 
-            for (Album album : albumList) {
+            List<String> lyricsPairsList = new ArrayList<>();
 
-                List<String> lyricsList = album.getLyrics();
+            for(Map<String, Object> map : albumList) {
 
-                int lastIndex = lyricsList.size() - 1;
+                for(Map.Entry<String, Object> album : map.entrySet()) {
+
+                    if(album.getKey().equals("lyrics")) {
+
+                        String lyrics = album.getValue().toString();
+                        String[] lines = lyrics.split("\\n");
+
+                        for (int i = 0; i < lines.length; i += 2) {
+                            if (i + 1 < lines.length) {
+                                String pair = lines[i] + "\n" + lines[i + 1];
+                                lyricsPairsList.add(pair);
+                            } else {
+                                lyricsPairsList.add(lines[i]);
+                            }
+                        }
+                    } else {
+                        // TODO 가사가 없을 시 처리
+                        // return "조회된 가사가 없습니다.";
+                    }
+                }
+            }
+
+            if(lyricsPairsList.size() > 0) {
+
+                int lastIndex = lyricsPairsList.size() - 1;
                 int currentIndex = 0;
-
                 XSLFSlide slide = null;
 
-                for (String lyric : lyricsList) {
+                for(String lyric : lyricsPairsList) {
 
                     slide = ppt.createSlide(slideLayout);
                     XSLFTextBox textBox = slide.createTextBox();
@@ -57,8 +73,8 @@ public class PptUtil {
                     XSLFTextParagraph paragraph = textBox.addNewTextParagraph();
                     XSLFTextRun run = paragraph.addNewTextRun();
                     run.setText(lyric);
-                    run.setFontFamily(FONT_FAMILY);
-                    run.setFontSize(FONT_SIZE);
+                    run.setFontFamily(MediaConstants.FONT_FAMILY);
+                    run.setFontSize(MediaConstants.FONT_SIZE);
 
                     paragraph.setTextAlign(TextParagraph.TextAlign.CENTER);
 
@@ -74,7 +90,7 @@ public class PptUtil {
             DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy.MM.dd");
             String currentDate = now.format(formatter);
 
-            FileOutputStream out = new FileOutputStream("/Users/cjy/" + currentDate + UPPER_DEPT + EXTENSION);
+            FileOutputStream out = new FileOutputStream("/Users/cjy/" + currentDate + MediaConstants.UPPER_DEPT + MediaConstants.EXTENSION);
 
             ppt.write(out);
             out.close();
@@ -89,7 +105,6 @@ public class PptUtil {
         try {
 
             FileInputStream fis = new FileInputStream("/Users/cjy/2024 청년부.pptx");
-            // FileInputStream fis = new FileInputStream("/Users/cjy/Test.pptx");
             XMLSlideShow ppt = new XMLSlideShow(fis);
             fis.close();
 

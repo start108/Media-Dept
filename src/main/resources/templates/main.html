@@ -71,7 +71,7 @@
 <!--<p th:text="'테스트 ' + ${data}">테스트 중</p>-->
 <input type="text" id="title" value="주를 찾는 모든 자들이">
 <button type="button" id="getAlbum">조회</button>
-<button type="button" id="">다운로드</button>
+<button type="button" id="downloadAlbumList">다운로드</button>
 <button type="button" id="addRow">+</button>
 <button type="button" id="delRow">-</button>
 <div>
@@ -97,7 +97,6 @@
             <thead>
             <tr>
                 <th></th>
-                <th>No</th>
                 <th>앨범명</th>
                 <th>가수</th>
             </tr>
@@ -111,21 +110,28 @@
 <script th:inline="javascript">
     const media = {
         albumList: [],
+        albumDownloadList: [],
         init: function () {
 
             $('#getAlbum').on('click', () => this.getAlbumList());
 
-            $('#addRow').on('click', (item, index) => this.addRow(index));
+            $('#addRow').on('click', () => this.addRow());
 
-            $('#listMainAlbum').on('click', '.chkAlbum', function () {
+            $('#delRow').on('click', () => this.delRow());
+
+            $('#downloadAlbumList').on('click', () => this.downloadAlbumList());
+
+            $('#listMainAlbum').on('click', 'input[type="checkbox"][name="chkMainAlbum"]', function () {
 
                 const row = $(this).closest('tr');
 
-                if ($(this).prop('checked')) {
-                    row.addClass('selectedRow');
-                } else {
-                    row.removeClass('selectedRow');
+                if($(this).prop('checked')) {
+                    $('input[type="checkbox"][name="chkMainAlbum"]').prop('checked',false);
+                    $('#listMainAlbum tr').removeClass('selectedRow');
                 }
+
+                $(this).prop('checked',true);
+                row.addClass('selectedRow');
             });
 
             $('#listMainAlbum').on('click', 'tr', function () {
@@ -133,13 +139,36 @@
                 const row = $(this).closest('tr');
                 const chkbox = $(this).find('td:first-child :checkbox');
 
-                if($(this).hasClass('selectedRow')) {
-                    chkbox.prop('checked', false);
-                    row.removeClass('selectedRow');
-                } else {
-                    row.addClass('selectedRow');
-                    chkbox.prop('checked', true);
+                $('input[type="checkbox"][name="chkMainAlbum"]').prop('checked', false);
+                $('#listMainAlbum tr').removeClass('selectedRow');
+
+                chkbox.prop('checked',true);
+                row.addClass('selectedRow');
+            });
+
+            $('#listSubAlbum').on('click', 'input[type="checkbox"][name="chkSubAlbum"]', function () {
+
+                const row = $(this).closest('tr');
+
+                if($(this).prop('checked')) {
+                    $('input[type="checkbox"][name="chkSubAlbum"]').prop('checked',false);
+                    $('#listSubAlbum tr').removeClass('selectedRow');
                 }
+
+                $(this).prop('checked',true);
+                row.addClass('selectedRow');
+            });
+
+            $('#listSubAlbum').on('click', 'tr', function () {
+
+                const row = $(this).closest('tr');
+                const chkbox = $(this).find('td:first-child :checkbox');
+
+                $('input[type="checkbox"][name="chkSubAlbum"]').prop('checked', false);
+                $('#listSubAlbum tr').removeClass('selectedRow');
+
+                chkbox.prop('checked',true);
+                row.addClass('selectedRow');
             });
         },
         getAlbumList: function () {
@@ -163,35 +192,67 @@
                         let no = index + 1;
 
                         innerHTML += '<tr>';
-                        innerHTML +=    '<td><input type = "checkbox" id = "chkMainAlbum' + index + '" class="chkAlbum"></td>';
+                        innerHTML +=    '<td><input type="checkbox" name="chkMainAlbum"></td>';
                         innerHTML +=    '<td>' + no + '</td>';
                         innerHTML +=    '<td>' + album.title + '</td>';
                         innerHTML +=    '<td>' + album.singer + '</td>';
                         innerHTML +=    '<td>' + album.date + '</td>';
                         // innerHTML +=    '<td>' + album.lyric.replaceAll("\n", "<br>") + '</td>';
                         innerHTML += '</tr>';
-                        innerHTML += '<tr>';
-                        innerHTML +=    '<td colspan="5"><button type="button" id = "btnLyric' + index + '">↓</button></td>';
-                        innerHTML += '</tr>';
+                        // innerHTML += '<tr>';
+                        // innerHTML +=    '<td colspan="5"><button type="button" id = "btnLyric' + index + '">↓</button></td>';
+                        // innerHTML += '</tr>';
                     });
 
                     $("#listMainAlbum").append(innerHTML);
                 },
-                error: function (error){
+                error: (error) => {
                     alert("오류가 발생하였습니다.")
                 }
             });
         },
         addRow: function () {
 
-            this.albumList.filter((album, index) => $('#listMainAlbum tr.selectedRow').index() == index).forEach((item, index) => {
+            this.albumList.filter((album, index) => $('#listMainAlbum tr.selectedRow').index() == index).forEach((album, index) => {
 
-                let no = index + 1;
+                let innerHTML = "";
 
-                $("#listSubAlbum").append('<td><input type = "checkbox" id = "chkSubAlbum' + index + '" class="chkAlbum"></td>');
-                $("#listSubAlbum").append('<td>' + no + '</td>');
-                $("#listSubAlbum").append('<td>' + item.title + '</td>');
-                $("#listSubAlbum").append('<td>' + item.singer + '</td>');
+                innerHTML += '<tr>';
+                innerHTML +=    '<td><input type = "checkbox" name="chkSubAlbum"></td>';
+                innerHTML +=    '<td>' + album.title + '</td>';
+                innerHTML +=    '<td>' + album.singer + '</td>';
+                innerHTML += '</tr>';
+
+                $('#listSubAlbum').append(innerHTML);
+
+                this.albumDownloadList.push(album);
+            });
+
+            $('input[type="checkbox"][name="chkMainAlbum"]').prop('checked', false);
+            $('#listMainAlbum tr').removeClass('selectedRow');
+        },
+        delRow: function () {
+
+            this.albumDownloadList.forEach((album, index) => {
+                if($('#listSubAlbum tr.selectedRow').index() == index) {
+                    $('input[type="checkbox"][name="chkSubAlbum"]:checked').closest('tr').remove();
+                    this.albumDownloadList.splice(index);
+                }
+            });
+        },
+        downloadAlbumList: function () {
+
+            $.ajax({
+                data: JSON.stringify(this.albumDownloadList),
+                contentType: 'application/json',
+                url: '/download',
+                type: 'POST',
+                success: (data) => {
+                    alert("다운로드 되었습니다.");
+                },
+                error: (error) => {
+                    alert("오류가 발생하였습니다.");
+                }
             });
         },
     };
