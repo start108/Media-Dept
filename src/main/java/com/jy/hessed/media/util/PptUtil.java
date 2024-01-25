@@ -21,13 +21,11 @@ public class PptUtil {
 
         try {
 
-            FileInputStream fis = new FileInputStream("/Users/cjy/Test.pptx");
+//            FileInputStream fis = new FileInputStream("/Users/cjy/Templete.pptx");
+            FileInputStream fis = new FileInputStream("/Users/cjy/2024 청년부(Test).pptx");
             XMLSlideShow ppt = new XMLSlideShow(fis);
 
             fis.close();
-
-            XSLFSlide slideTemplate = ppt.getSlides().get(0);
-            XSLFSlideLayout slideLayout = slideTemplate.getSlideLayout();
 
             List<String> lyricsPairsList = new ArrayList<>();
 
@@ -57,16 +55,20 @@ public class PptUtil {
 
             if(lyricsPairsList.size() > 0) {
 
+                XSLFSlide slideTemplate = ppt.getSlides().get(0);
+                XSLFSlideLayout slideLayout = slideTemplate.getSlideLayout();
+
                 int lastIndex = lyricsPairsList.size() - 1;
                 int currentIndex = 0;
-                XSLFSlide slide = null;
+//                XSLFSlide slide = null;
 
                 for(String lyric : lyricsPairsList) {
 
-                    slide = ppt.createSlide(slideLayout);
+                    XSLFSlide slide = ppt.createSlide(slideLayout);
                     XSLFTextBox textBox = slide.createTextBox();
 
-                    textBox.setAnchor(new Rectangle2D.Double(-4.965354330708662, 2.4859055118110236, 964.9653543307087, 94.51409448818897));
+                    //textBox.setAnchor(new Rectangle2D.Double(0.0, -11.0, 960.0, 94.51409448818897)); // 1.2429133858267716 헤세드
+                    textBox.setAnchor(new Rectangle2D.Double(375.0, 433.0, 585.0, 94.51409448818897)); // 445.48590551181104 두나미스
                     textBox.setTextAutofit(XSLFTextBox.TextAutofit.NONE);
                     textBox.setWordWrap(true);
 
@@ -76,10 +78,11 @@ public class PptUtil {
                     run.setFontFamily(MediaConstants.FONT_FAMILY);
                     run.setFontSize(MediaConstants.FONT_SIZE);
 
-                    paragraph.setTextAlign(TextParagraph.TextAlign.CENTER);
+                    //paragraph.setTextAlign(TextParagraph.TextAlign.CENTER); // 헤세드
+                    paragraph.setTextAlign(TextParagraph.TextAlign.RIGHT); // 두나미스
 
                     if (currentIndex == lastIndex) {
-                        slide = ppt.createSlide(slideLayout);
+                        ppt.createSlide(slideLayout);
                     }
 
                     currentIndex++;
@@ -104,11 +107,11 @@ public class PptUtil {
 
         try {
 
-            FileInputStream fis = new FileInputStream("/Users/cjy/2024 청년부.pptx");
+            FileInputStream fis = new FileInputStream("/Users/cjy/2024 청년부(Test).pptx");
             XMLSlideShow ppt = new XMLSlideShow(fis);
             fis.close();
 
-            XSLFSlide slide = ppt.getSlides().get(1);
+            XSLFSlide slide = ppt.getSlides().get(0);
 
             for (XSLFShape shape : slide.getShapes()) {
 
@@ -137,6 +140,8 @@ public class PptUtil {
                         }
                     }
                 }
+
+                System.out.println("----------------------------------------------------");
             }
         } catch (IOException e) {
             e.printStackTrace();

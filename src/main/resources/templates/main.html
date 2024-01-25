@@ -27,6 +27,12 @@
         float: right;
         position: relative;
     }
+    div.right-1 {
+        height: 50%;
+    }
+    div.right-2 {
+        height: 50%;
+    }
     table {
         border-collapse: separate;
         border-spacing: 0;
@@ -69,7 +75,7 @@
 </style>
 <body>
 <!--<p th:text="'테스트 ' + ${data}">테스트 중</p>-->
-<input type="text" id="title" value="주를 찾는 모든 자들이">
+<input type="text" id="title" value="그리스도의 계절">
 <button type="button" id="getAlbum">조회</button>
 <button type="button" id="downloadAlbumList">다운로드</button>
 <button type="button" id="addRow">+</button>
@@ -93,16 +99,30 @@
         </table>
     </div>
     <div class="right" style="padding: 10px;">
-        <table>
-            <thead>
-            <tr>
-                <th></th>
-                <th>앨범명</th>
-                <th>가수</th>
-            </tr>
-            </thead>
-            <tbody id="listSubAlbum"></tbody>
-        </table>
+        <div class="right-1">
+            <table>
+                <thead>
+                <tr>
+                    <th></th>
+                    <th>앨범명</th>
+                    <th>가수</th>
+                </tr>
+                </thead>
+                <tbody id="listSubAlbum"></tbody>
+            </table>
+        </div>
+        <div class="right-2">
+            <table>
+                <thead>
+                <tr>
+                    <th></th>
+                    <th>앨범명</th>
+                    <th>가수</th>
+                </tr>
+                </thead>
+                <tbody id="listSubAlbum2"></tbody>
+            </table>
+        </div>
     </div>
 </div>
 </body>

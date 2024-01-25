@@ -75,6 +75,7 @@ public class MediaDeptService {
 
     public MediaDTO makePpt(List<Map<String, Object>> albumList) throws IOException {
 
+//        PptUtil.getBox();
         PptUtil.makePpt(albumList);
 
         return MediaDTO.builder().build();
