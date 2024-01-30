@@ -67,8 +67,13 @@ public class PptUtil {
                     XSLFSlide slide = ppt.createSlide(slideLayout);
                     XSLFTextBox textBox = slide.createTextBox();
 
-                    //textBox.setAnchor(new Rectangle2D.Double(0.0, -11.0, 960.0, 94.51409448818897)); // 1.2429133858267716 헤세드
-                    textBox.setAnchor(new Rectangle2D.Double(375.0, 433.0, 585.0, 94.51409448818897)); // 445.48590551181104 두나미스
+                    /*
+                    * 실제 사이즈
+                    * 헤세드 : 1.2429133858267716
+                    * 두나미스 : 445.48590551181104
+                    * */
+                    textBox.setAnchor(new Rectangle2D.Double(0.0, -11.0, 960.0, 94.51409448818897));
+                    //textBox.setAnchor(new Rectangle2D.Double(375.0, 433.0, 585.0, 94.51409448818897));
                     textBox.setTextAutofit(XSLFTextBox.TextAutofit.NONE);
                     textBox.setWordWrap(true);
 
@@ -78,8 +83,12 @@ public class PptUtil {
                     run.setFontFamily(MediaConstants.FONT_FAMILY);
                     run.setFontSize(MediaConstants.FONT_SIZE);
 
-                    //paragraph.setTextAlign(TextParagraph.TextAlign.CENTER); // 헤세드
-                    paragraph.setTextAlign(TextParagraph.TextAlign.RIGHT); // 두나미스
+                    /*
+                    * paragraph.setTextAlign(TextParagraph.TextAlign.CENTER); // 헤세드
+                    * paragraph.setTextAlign(TextParagraph.TextAlign.RIGHT); // 두나미스
+                    * */
+                    paragraph.setTextAlign(TextParagraph.TextAlign.CENTER);
+                    //paragraph.setTextAlign(TextParagraph.TextAlign.RIGHT);
 
                     if (currentIndex == lastIndex) {
                         ppt.createSlide(slideLayout);
