@@ -12,6 +12,7 @@ import java.io.IOException;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -29,11 +30,14 @@ public class PptUtil {
 
             List<String> lyricsPairsList = new ArrayList<>();
 
-            for(Map<String, Object> map : albumList) {
+            for(Map<String, Object> albumMap : albumList) {
+                for(Map.Entry<String, Object> album : albumMap.entrySet()) {
 
-                for(Map.Entry<String, Object> album : map.entrySet()) {
+                    if(album.getKey().equals("title")) {
 
-                    if(album.getKey().equals("lyrics")) {
+                        lyricsPairsList.add(album.getValue().toString());
+
+                    } else if(album.getKey().equals("lyrics")) {
 
                         String lyrics = album.getValue().toString();
                         String[] lines = lyrics.split("\\n");
@@ -46,56 +50,49 @@ public class PptUtil {
                                 lyricsPairsList.add(lines[i]);
                             }
                         }
-                    } else {
-                        // TODO 가사가 없을 시 처리
-                        // return "조회된 가사가 없습니다.";
                     }
                 }
             }
 
-            if(lyricsPairsList.size() > 0) {
+            XSLFSlide slideTemplate = ppt.getSlides().get(0);
+            XSLFSlideLayout slideLayout = slideTemplate.getSlideLayout();
 
-                XSLFSlide slideTemplate = ppt.getSlides().get(0);
-                XSLFSlideLayout slideLayout = slideTemplate.getSlideLayout();
+            int lastIndex = lyricsPairsList.size() - 1;
+            int currentIndex = 0;
 
-                int lastIndex = lyricsPairsList.size() - 1;
-                int currentIndex = 0;
-//                XSLFSlide slide = null;
+            for(String lyric : lyricsPairsList) {
 
-                for(String lyric : lyricsPairsList) {
+                XSLFSlide slide = ppt.createSlide(slideLayout);
+                XSLFTextBox textBox = slide.createTextBox();
 
-                    XSLFSlide slide = ppt.createSlide(slideLayout);
-                    XSLFTextBox textBox = slide.createTextBox();
+                /*
+                * 실제 사이즈
+                * 헤세드 : 1.2429133858267716
+                * 두나미스 : 445.48590551181104
+                * */
+                textBox.setAnchor(new Rectangle2D.Double(0.0, -11.0, 960.0, 94.51409448818897));
+                //textBox.setAnchor(new Rectangle2D.Double(375.0, 433.0, 585.0, 94.51409448818897));
+                textBox.setTextAutofit(XSLFTextBox.TextAutofit.NONE);
+                textBox.setWordWrap(true);
 
-                    /*
-                    * 실제 사이즈
-                    * 헤세드 : 1.2429133858267716
-                    * 두나미스 : 445.48590551181104
-                    * */
-                    textBox.setAnchor(new Rectangle2D.Double(0.0, -11.0, 960.0, 94.51409448818897));
-                    //textBox.setAnchor(new Rectangle2D.Double(375.0, 433.0, 585.0, 94.51409448818897));
-                    textBox.setTextAutofit(XSLFTextBox.TextAutofit.NONE);
-                    textBox.setWordWrap(true);
+                XSLFTextParagraph paragraph = textBox.addNewTextParagraph();
+                XSLFTextRun run = paragraph.addNewTextRun();
+                run.setText(lyric);
+                run.setFontFamily(MediaConstants.FONT_FAMILY);
+                run.setFontSize(MediaConstants.FONT_SIZE);
 
-                    XSLFTextParagraph paragraph = textBox.addNewTextParagraph();
-                    XSLFTextRun run = paragraph.addNewTextRun();
-                    run.setText(lyric);
-                    run.setFontFamily(MediaConstants.FONT_FAMILY);
-                    run.setFontSize(MediaConstants.FONT_SIZE);
+                /*
+                * paragraph.setTextAlign(TextParagraph.TextAlign.CENTER); // 헤세드
+                * paragraph.setTextAlign(TextParagraph.TextAlign.RIGHT); // 두나미스
+                * */
+                paragraph.setTextAlign(TextParagraph.TextAlign.CENTER);
+                //paragraph.setTextAlign(TextParagraph.TextAlign.RIGHT);
 
-                    /*
-                    * paragraph.setTextAlign(TextParagraph.TextAlign.CENTER); // 헤세드
-                    * paragraph.setTextAlign(TextParagraph.TextAlign.RIGHT); // 두나미스
-                    * */
-                    paragraph.setTextAlign(TextParagraph.TextAlign.CENTER);
-                    //paragraph.setTextAlign(TextParagraph.TextAlign.RIGHT);
-
-                    if (currentIndex == lastIndex) {
-                        ppt.createSlide(slideLayout);
-                    }
-
-                    currentIndex++;
+                if (currentIndex == lastIndex) {
+                    ppt.createSlide(slideLayout);
                 }
+
+                currentIndex++;
             }
 
             LocalDate now = LocalDate.now();
