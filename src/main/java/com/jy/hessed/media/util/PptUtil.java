@@ -21,8 +21,7 @@ public class PptUtil {
 
         try {
 
-//            FileInputStream fis = new FileInputStream("/Users/cjy/Templete.pptx");
-            FileInputStream fis = new FileInputStream("/Users/cjy/2024 청년부(Test).pptx");
+            FileInputStream fis = new FileInputStream("/Users/cjy/Templete.pptx");
             XMLSlideShow ppt = new XMLSlideShow(fis);
 
             fis.close();
@@ -30,57 +29,32 @@ public class PptUtil {
             XSLFSlide slideTemplate = ppt.getSlides().get(0);
             XSLFSlideLayout slideLayout = slideTemplate.getSlideLayout();
 
-            for(Map<String, Object> albumMap : albumList) {
+            /* Hessed */
+            for(Map<String, Object> hessedAlbumMap : albumList) {
 
-                for(Map.Entry<String, Object> album : albumMap.entrySet()) {
+                for(Map.Entry<String, Object> hessedAlbum : hessedAlbumMap.entrySet()) {
 
-                    if("title".equals(album.getKey())) {
+                    if("title".equals(hessedAlbum.getKey())) {
 
                         XSLFSlide titleSlide = ppt.createSlide(slideLayout);
-                        XSLFTextBox titleTextBox = titleSlide.createTextBox();
+                        createHessedSlide(titleSlide, new Rectangle2D.Double(0.0, 10.0, 960.0, 50.892204724409446), hessedAlbum.getValue().toString());
 
-                        // textBox.setAnchor(new Rectangle2D.Double(375.0, 433.0, 585.0, 94.51409448818897)); 두나미스 찬양 제목
-                        titleTextBox.setAnchor(new Rectangle2D.Double(0.0, 10.0, 960.0, 50.892204724409446));
-                        titleTextBox.setTextAutofit(XSLFTextBox.TextAutofit.NONE);
-                        titleTextBox.setWordWrap(true);
+                    } else if("lyrics".equals(hessedAlbum.getKey())) {
 
-                        XSLFTextParagraph paragraph = titleTextBox.addNewTextParagraph();
-                        XSLFTextRun run = paragraph.addNewTextRun();
-
-                        run.setText(album.getValue().toString());
-                        run.setFontFamily(MediaConstants.FONT_FAMILY);
-                        run.setFontSize(MediaConstants.FONT_SIZE);
-
-                        paragraph.setTextAlign(TextParagraph.TextAlign.CENTER);
-                        // paragraph.setTextAlign(TextParagraph.TextAlign.RIGHT); // 두나미스 찬양 제목
-
-                    } else if("lyrics".equals(album.getKey())) {
-
-                        List<String> lyricsPairsList = pairsLyrics(album.getValue().toString());
+                        List<String> lyricsPairsList = pairsLyrics(hessedAlbum.getValue().toString());
 
                         for(String lyric : lyricsPairsList) {
 
                             XSLFSlide lyricSlide = ppt.createSlide(slideLayout);
-                            XSLFTextBox lyricTextBox = lyricSlide.createTextBox();
-
-                            lyricTextBox.setAnchor(new Rectangle2D.Double(0.0, -12.0, 960.0, 94.51409448818897));
-                            lyricTextBox.setTextAutofit(XSLFTextBox.TextAutofit.NONE);
-                            lyricTextBox.setWordWrap(true);
-
-                            XSLFTextParagraph paragraph = lyricTextBox.addNewTextParagraph();
-                            XSLFTextRun run = paragraph.addNewTextRun();
-
-                            run.setText(lyric);
-                            run.setFontFamily(MediaConstants.FONT_FAMILY);
-                            run.setFontSize(MediaConstants.FONT_SIZE);
-
-                            paragraph.setTextAlign(TextParagraph.TextAlign.CENTER);
+                            createHessedSlide(lyricSlide, new Rectangle2D.Double(0.0, -12.0, 960.0, 94.51409448818897), lyric);
                         }
 
                         lyricsPairsList.clear();
                     }
                 }
             }
+
+            /* TODO Dunamis */
 
             LocalDate now = LocalDate.now();
             DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy.MM.dd");
@@ -115,8 +89,26 @@ public class PptUtil {
         return lyricsPairsList;
     }
 
-    private static void createHessedSlide(String se, String value, double x, double y, double width, double height) {
+    private static void createHessedSlide(XSLFSlide slide, Rectangle2D rectangle, String text) {
 
+        /*
+        * textBox.setAnchor(new Rectangle2D.Double(375.0, 433.0, 585.0, 94.51409448818897)); 두나미스 찬양 제목
+        * paragraph.setTextAlign(TextParagraph.TextAlign.RIGHT); 두나미스 찬양 제목
+        * */
+        XSLFTextBox textBox = slide.createTextBox();
+
+        textBox.setAnchor(rectangle);
+        textBox.setTextAutofit(XSLFTextBox.TextAutofit.NONE);
+        textBox.setWordWrap(true);
+
+        XSLFTextParagraph paragraph = textBox.addNewTextParagraph();
+        XSLFTextRun run = paragraph.addNewTextRun();
+
+        run.setText(text);
+        run.setFontFamily(MediaConstants.FONT_FAMILY);
+        run.setFontSize(MediaConstants.FONT_SIZE);
+
+        paragraph.setTextAlign(TextParagraph.TextAlign.CENTER);
     }
 
     public static void getBox() {
@@ -142,7 +134,7 @@ public class PptUtil {
                     System.out.println(width + " x " + height + "\n" + x + ", " + y);
 
                     Color fillColor = textBox.getFillColor();
-                    System.out.println("텍스트 박스의 도형 채우기 색상: " + fillColor);
+                    System.out.println("텍스트 박스 채우기 색상: " + fillColor);
 
                     for (XSLFTextParagraph paragraph : textBox.getTextParagraphs()) {
 
@@ -156,8 +148,6 @@ public class PptUtil {
                         }
                     }
                 }
-
-                System.out.println("----------------------------------------------------");
             }
         } catch (IOException e) {
             e.printStackTrace();

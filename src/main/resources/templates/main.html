@@ -91,7 +91,6 @@
             <thead>
             <tr>
                 <th></th>
-                <th>No</th>
                 <th>앨범명</th>
                 <th>가수</th>
                 <th>발매일</th>
@@ -211,11 +210,8 @@
 
                     data.albumList.forEach((album, index) => {
 
-                        let no = index + 1;
-
                         innerHTML += '<tr>';
                         innerHTML +=    '<td><input type="checkbox" name="chkMainAlbum"></td>';
-                        innerHTML +=    '<td>' + no + '</td>';
                         innerHTML +=    '<td>' + album.title + '</td>';
                         innerHTML +=    '<td>' + album.singer + '</td>';
                         innerHTML +=    '<td>' + album.date + '</td>';
