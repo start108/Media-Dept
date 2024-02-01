@@ -22,77 +22,61 @@ public class PptUtil {
 
         try {
 
-//            FileInputStream fis = new FileInputStream("/Users/cjy/Templete.pptx");
-            FileInputStream fis = new FileInputStream("/Users/cjy/2024 청년부(Test).pptx");
+            FileInputStream fis = new FileInputStream("/Users/cjy/Templete.pptx");
             XMLSlideShow ppt = new XMLSlideShow(fis);
 
             fis.close();
 
-            List<String> lyricsPairsList = new ArrayList<>();
-
-            for(Map<String, Object> albumMap : albumList) {
-                for(Map.Entry<String, Object> album : albumMap.entrySet()) {
-
-                    if(album.getKey().equals("title")) {
-
-                        lyricsPairsList.add(album.getValue().toString());
-
-                    } else if(album.getKey().equals("lyrics")) {
-
-                        String lyrics = album.getValue().toString();
-                        String[] lines = lyrics.split("\\n");
-
-                        for (int i = 0; i < lines.length; i += 2) {
-                            if (i + 1 < lines.length) {
-                                String pair = lines[i] + "\n" + lines[i + 1];
-                                lyricsPairsList.add(pair);
-                            } else {
-                                lyricsPairsList.add(lines[i]);
-                            }
-                        }
-                    }
-                }
-            }
-
             XSLFSlide slideTemplate = ppt.getSlides().get(0);
             XSLFSlideLayout slideLayout = slideTemplate.getSlideLayout();
 
-            int lastIndex = lyricsPairsList.size() - 1;
-            int currentIndex = 0;
+            for(Map<String, Object> map : albumList) {
 
-            for(String lyric : lyricsPairsList) {
+                for(Map.Entry<String, Object> album : map.entrySet()) {
 
-                XSLFSlide slide = ppt.createSlide(slideLayout);
-                XSLFTextBox textBox = slide.createTextBox();
+                    if("title".equals(album.getKey())) {
 
-                /*
-                * 실제 사이즈
-                * 헤세드 : 1.2429133858267716
-                * 두나미스 : 445.48590551181104
-                * */
-                textBox.setAnchor(new Rectangle2D.Double(0.0, -11.0, 960.0, 94.51409448818897));
-                //textBox.setAnchor(new Rectangle2D.Double(375.0, 433.0, 585.0, 94.51409448818897));
-                textBox.setTextAutofit(XSLFTextBox.TextAutofit.NONE);
-                textBox.setWordWrap(true);
+                        XSLFSlide slide = ppt.createSlide(slideLayout);
+                        XSLFTextBox textBox = slide.createTextBox();
 
-                XSLFTextParagraph paragraph = textBox.addNewTextParagraph();
-                XSLFTextRun run = paragraph.addNewTextRun();
-                run.setText(lyric);
-                run.setFontFamily(MediaConstants.FONT_FAMILY);
-                run.setFontSize(MediaConstants.FONT_SIZE);
+                        textBox.setAnchor(new Rectangle2D.Double(375.0, 433.0, 585.0, 94.51409448818897));
+                        textBox.setTextAutofit(XSLFTextBox.TextAutofit.NONE);
+                        textBox.setWordWrap(true);
 
-                /*
-                * paragraph.setTextAlign(TextParagraph.TextAlign.CENTER); // 헤세드
-                * paragraph.setTextAlign(TextParagraph.TextAlign.RIGHT); // 두나미스
-                * */
-                paragraph.setTextAlign(TextParagraph.TextAlign.CENTER);
-                //paragraph.setTextAlign(TextParagraph.TextAlign.RIGHT);
+                        XSLFTextParagraph paragraph = textBox.addNewTextParagraph();
+                        XSLFTextRun run = paragraph.addNewTextRun();
+                        run.setText(album.getValue().toString());
+                        run.setFontFamily(MediaConstants.FONT_FAMILY);
+                        run.setFontSize(MediaConstants.FONT_SIZE);
 
-                if (currentIndex == lastIndex) {
-                    ppt.createSlide(slideLayout);
+                        paragraph.setTextAlign(TextParagraph.TextAlign.RIGHT);
+                    } else if("lyrics".equals(album.getKey())) {
+
+                        List<String> lyricsPairsList = pairsLyrics(album.getValue().toString());
+
+                        for(String lyric : lyricsPairsList) {
+
+                            XSLFSlide slide1 = ppt.createSlide(slideLayout);
+                            XSLFTextBox textBox1 = slide1.createTextBox();
+
+                            textBox1.setAnchor(new Rectangle2D.Double(0.0, -11.0, 960.0, 94.51409448818897));
+                            textBox1.setTextAutofit(XSLFTextBox.TextAutofit.NONE);
+                            textBox1.setWordWrap(true);
+
+                            XSLFTextParagraph paragraph = textBox1.addNewTextParagraph();
+                            XSLFTextRun run = paragraph.addNewTextRun();
+
+                            run.setText(lyric);
+
+                            run.setFontFamily(MediaConstants.FONT_FAMILY);
+                            run.setFontSize(MediaConstants.FONT_SIZE);
+
+                            paragraph.setTextAlign(TextParagraph.TextAlign.CENTER);
+                        }
+
+                        lyricsPairsList.clear();
+                    }
                 }
-
-                currentIndex++;
             }
 
             LocalDate now = LocalDate.now();
@@ -152,5 +136,24 @@ public class PptUtil {
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    private static List<String> pairsLyrics(String parameter) {
+
+        List<String> lyricsPairsList = new ArrayList<>();
+
+        String lyrics = parameter;
+        String[] lines = lyrics.split("\\n");
+
+        for (int i = 0; i < lines.length; i += 2) {
+            if (i + 1 < lines.length) {
+                String pair = lines[i] + "\n" + lines[i + 1];
+                lyricsPairsList.add(pair);
+            } else {
+                lyricsPairsList.add(lines[i]);
+            }
+        }
+
+        return lyricsPairsList;
     }
 }
