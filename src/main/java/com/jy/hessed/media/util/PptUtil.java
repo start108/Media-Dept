@@ -12,17 +12,17 @@ import java.io.IOException;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 public class PptUtil {
 
-    public static void makePpt(List<Map<String, Object>> albumList) throws IOException {
+    public static void makePpt(List<Map<String, Object>> albumList) {
 
         try {
 
-            FileInputStream fis = new FileInputStream("/Users/cjy/Templete.pptx");
+//            FileInputStream fis = new FileInputStream("/Users/cjy/Templete.pptx");
+            FileInputStream fis = new FileInputStream("/Users/cjy/2024 청년부(Test).pptx");
             XMLSlideShow ppt = new XMLSlideShow(fis);
 
             fis.close();
@@ -30,43 +30,44 @@ public class PptUtil {
             XSLFSlide slideTemplate = ppt.getSlides().get(0);
             XSLFSlideLayout slideLayout = slideTemplate.getSlideLayout();
 
-            for(Map<String, Object> map : albumList) {
+            for(Map<String, Object> albumMap : albumList) {
 
-                for(Map.Entry<String, Object> album : map.entrySet()) {
+                for(Map.Entry<String, Object> album : albumMap.entrySet()) {
 
                     if("title".equals(album.getKey())) {
 
-                        //createHessedSlide("title", album.getValue().toString(), 375.0, 433.0, 585.0, 94.51409448818897);
+                        XSLFSlide titleSlide = ppt.createSlide(slideLayout);
+                        XSLFTextBox titleTextBox = titleSlide.createTextBox();
 
-                        XSLFSlide slide = ppt.createSlide(slideLayout);
-                        XSLFTextBox textBox = slide.createTextBox();
+                        // textBox.setAnchor(new Rectangle2D.Double(375.0, 433.0, 585.0, 94.51409448818897)); 두나미스 찬양 제목
+                        titleTextBox.setAnchor(new Rectangle2D.Double(0.0, 10.0, 960.0, 50.892204724409446));
+                        titleTextBox.setTextAutofit(XSLFTextBox.TextAutofit.NONE);
+                        titleTextBox.setWordWrap(true);
 
-                        textBox.setAnchor(new Rectangle2D.Double(375.0, 433.0, 585.0, 94.51409448818897));
-                        textBox.setTextAutofit(XSLFTextBox.TextAutofit.NONE);
-                        textBox.setWordWrap(true);
-
-                        XSLFTextParagraph paragraph = textBox.addNewTextParagraph();
+                        XSLFTextParagraph paragraph = titleTextBox.addNewTextParagraph();
                         XSLFTextRun run = paragraph.addNewTextRun();
 
                         run.setText(album.getValue().toString());
                         run.setFontFamily(MediaConstants.FONT_FAMILY);
                         run.setFontSize(MediaConstants.FONT_SIZE);
 
-                        paragraph.setTextAlign(TextParagraph.TextAlign.RIGHT);
+                        paragraph.setTextAlign(TextParagraph.TextAlign.CENTER);
+                        // paragraph.setTextAlign(TextParagraph.TextAlign.RIGHT); // 두나미스 찬양 제목
+
                     } else if("lyrics".equals(album.getKey())) {
 
                         List<String> lyricsPairsList = pairsLyrics(album.getValue().toString());
 
                         for(String lyric : lyricsPairsList) {
 
-                            XSLFSlide slide1 = ppt.createSlide(slideLayout);
-                            XSLFTextBox textBox1 = slide1.createTextBox();
+                            XSLFSlide lyricSlide = ppt.createSlide(slideLayout);
+                            XSLFTextBox lyricTextBox = lyricSlide.createTextBox();
 
-                            textBox1.setAnchor(new Rectangle2D.Double(0.0, -11.0, 960.0, 94.51409448818897));
-                            textBox1.setTextAutofit(XSLFTextBox.TextAutofit.NONE);
-                            textBox1.setWordWrap(true);
+                            lyricTextBox.setAnchor(new Rectangle2D.Double(0.0, -12.0, 960.0, 94.51409448818897));
+                            lyricTextBox.setTextAutofit(XSLFTextBox.TextAutofit.NONE);
+                            lyricTextBox.setWordWrap(true);
 
-                            XSLFTextParagraph paragraph = textBox1.addNewTextParagraph();
+                            XSLFTextParagraph paragraph = lyricTextBox.addNewTextParagraph();
                             XSLFTextRun run = paragraph.addNewTextRun();
 
                             run.setText(lyric);
@@ -93,6 +94,29 @@ public class PptUtil {
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    private static List<String> pairsLyrics(String parameter) {
+
+        List<String> lyricsPairsList = new ArrayList<>();
+
+        String lyrics = parameter;
+        String[] lines = lyrics.split("\\n");
+
+        for (int i = 0; i < lines.length; i += 2) {
+            if (i + 1 < lines.length) {
+                String pair = lines[i] + "\n" + lines[i + 1];
+                lyricsPairsList.add(pair);
+            } else {
+                lyricsPairsList.add(lines[i]);
+            }
+        }
+
+        return lyricsPairsList;
+    }
+
+    private static void createHessedSlide(String se, String value, double x, double y, double width, double height) {
+
     }
 
     public static void getBox() {
@@ -138,28 +162,5 @@ public class PptUtil {
         } catch (IOException e) {
             e.printStackTrace();
         }
-    }
-
-    private static List<String> pairsLyrics(String parameter) {
-
-        List<String> lyricsPairsList = new ArrayList<>();
-
-        String lyrics = parameter;
-        String[] lines = lyrics.split("\\n");
-
-        for (int i = 0; i < lines.length; i += 2) {
-            if (i + 1 < lines.length) {
-                String pair = lines[i] + "\n" + lines[i + 1];
-                lyricsPairsList.add(pair);
-            } else {
-                lyricsPairsList.add(lines[i]);
-            }
-        }
-
-        return lyricsPairsList;
-    }
-
-    private static void createHessedSlide(String se, String value, double x, double y, double width, double height) {
-
     }
 }
