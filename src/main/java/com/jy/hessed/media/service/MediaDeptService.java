@@ -33,7 +33,7 @@ public class MediaDeptService {
 
             Elements musicResultSearch = searchDocument.select("section.sc_new.sp_pmusic._fe_music_collection");
 
-            // TODO
+            // TODO Exception
             if (musicResultSearch.size() == 0) {
             }
 
@@ -60,7 +60,7 @@ public class MediaDeptService {
                 albumList.add(album);
             }
 
-            // TODO
+            // TODO Exception
             if(albumList.size() == 0) {
             }
 

@@ -3,8 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <title>Test</title>
-<!--    <link th:href="@{/css/main.css}" rel="stylesheet" />-->
-<!--    <script type="text/javascript" th:src="@{/js/main.js}"></script>-->
+    <!--    <link th:href="@{/css/main.css}" rel="stylesheet" />-->
+    <!--    <script type="text/javascript" th:src="@{/js/main.js}"></script>-->
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
 </head>
 <style>
@@ -12,81 +12,89 @@
         color: #666;
         font: 14px/24px "Open Sans", "HelveticaNeue-Light", "Helvetica Neue Light", "Helvetica Neue", Helvetica, Arial, "Lucida Grande", Sans-Serif;
     }
+
     div {
         width: 100%;
         height: 500px;
         position: relative;
     }
+
     div.left {
         width: 60%;
         float: left;
         position: relative;
         padding: 10px;
     }
+
     div.right {
         width: 35%;
         float: right;
         position: relative;
         padding: 10px;
     }
-    div.right-1 {
-        height: 50%;
-    }
-    div.right-2 {
-        height: 50%;
-    }
+
     table {
         border-collapse: separate;
         border-spacing: 0;
         width: 100%;
     }
+
     th, td {
         padding: 6px 15px;
         text-align: center;
     }
+
     th {
         background: #42444e;
         color: #fff;
         text-align: center;
     }
+
     tr:first-child th:first-child {
         border-top-left-radius: 6px;
     }
+
     tr:first-child th:last-child {
         border-top-right-radius: 6px;
     }
+
     td {
         border-right: 1px solid #c6c9cc;
         border-bottom: 1px solid #c6c9cc;
     }
+
     td:first-child {
         border-left: 1px solid #c6c9cc;
     }
+
     .selectedRow {
         background: #eaeaed;
     }
+
     tr:last-child td:first-child {
         border-bottom-left-radius: 6px;
     }
+
     tr:last-child td:last-child {
         border-bottom-right-radius: 6px;
     }
+
     div.btn-right-area {
         float: right;
     }
 </style>
 <body>
 <!--<p th:text="'테스트 ' + ${data}">테스트 중</p>-->
-<input type="text" id="title" value="그리스도의 계절">
+<input type="text" id="title" value="">
 <button type="button" id="getAlbum">조회</button>
 <button type="button" id="downloadAlbumList">다운로드</button>
 <button type="button" id="addRow">+</button>
 <button type="button" id="delRow">-</button>
 <div>
     <div class="left">
-<!--        <div class="btn-right-area">-->
-<!--            -->
-<!--        </div>-->
+        <!--        <div class="btn-right-area">-->
+        <!--            -->
+        <!--        </div>-->
         <table id="tblListAlbum">
             <thead>
             <tr>
@@ -100,30 +108,17 @@
         </table>
     </div>
     <div class="right">
-        <div class="right-1">
-            <table>
-                <thead>
-                <tr>
-                    <th></th>
-                    <th>앨범명</th>
-                    <th>가수</th>
-                </tr>
-                </thead>
-                <tbody id="listSubAlbum"></tbody>
-            </table>
-        </div>
-        <div class="right-2">
-            <table>
-                <thead>
-                <tr>
-                    <th></th>
-                    <th>앨범명</th>
-                    <th>가수</th>
-                </tr>
-                </thead>
-                <tbody id="listSubAlbum2"></tbody>
-            </table>
-        </div>
+        <table>
+            <thead>
+            <tr>
+                <th></th>
+                <th></th>
+                <th>앨범명</th>
+                <th>가수</th>
+            </tr>
+            </thead>
+            <tbody id="listSubAlbum"></tbody>
+        </table>
     </div>
 </div>
 </body>
@@ -146,12 +141,12 @@
 
                 const row = $(this).closest('tr');
 
-                if($(this).prop('checked')) {
-                    $('input[type="checkbox"][name="chkMainAlbum"]').prop('checked',false);
+                if ($(this).prop('checked')) {
+                    $('input[type="checkbox"][name="chkMainAlbum"]').prop('checked', false);
                     $('#listMainAlbum tr').removeClass('selectedRow');
                 }
 
-                $(this).prop('checked',true);
+                $(this).prop('checked', true);
                 row.addClass('selectedRow');
             });
 
@@ -163,7 +158,7 @@
                 $('input[type="checkbox"][name="chkMainAlbum"]').prop('checked', false);
                 $('#listMainAlbum tr').removeClass('selectedRow');
 
-                chkbox.prop('checked',true);
+                chkbox.prop('checked', true);
                 row.addClass('selectedRow');
             });
 
@@ -171,12 +166,12 @@
 
                 const row = $(this).closest('tr');
 
-                if($(this).prop('checked')) {
-                    $('input[type="checkbox"][name="chkSubAlbum"]').prop('checked',false);
+                if ($(this).prop('checked')) {
+                    $('input[type="checkbox"][name="chkSubAlbum"]').prop('checked', false);
                     $('#listSubAlbum tr').removeClass('selectedRow');
                 }
 
-                $(this).prop('checked',true);
+                $(this).prop('checked', true);
                 row.addClass('selectedRow');
             });
 
@@ -188,7 +183,7 @@
                 $('input[type="checkbox"][name="chkSubAlbum"]').prop('checked', false);
                 $('#listSubAlbum tr').removeClass('selectedRow');
 
-                chkbox.prop('checked',true);
+                chkbox.prop('checked', true);
                 row.addClass('selectedRow');
             });
         },
@@ -211,10 +206,10 @@
                     data.albumList.forEach((album, index) => {
 
                         innerHTML += '<tr>';
-                        innerHTML +=    '<td><input type="checkbox" name="chkMainAlbum"></td>';
-                        innerHTML +=    '<td>' + album.title + '</td>';
-                        innerHTML +=    '<td>' + album.singer + '</td>';
-                        innerHTML +=    '<td>' + album.date + '</td>';
+                        innerHTML += '<td><input type="checkbox" name="chkMainAlbum"></td>';
+                        innerHTML += '<td>' + album.title + '</td>';
+                        innerHTML += '<td>' + album.singer + '</td>';
+                        innerHTML += '<td>' + album.date + '</td>';
                         // innerHTML +=    '<td>' + album.lyric.replaceAll("\n", "<br>") + '</td>';
                         innerHTML += '</tr>';
                         // innerHTML += '<tr>';
@@ -231,11 +226,12 @@
         },
         addRow: function () {
 
-            this.albumList.filter((album, index) => $('#listMainAlbum tr.selectedRow').index() == index).forEach((album, index) => {
+            this.albumList.filter((album, index) => $('#listMainAlbum tr.selectedRow').index() == index).forEach((album) => {
 
                 let innerHTML = "";
 
                 innerHTML += '<tr>';
+                innerHTML +=    '<td><input type = "radio" name="rdoSubAlbum"  value="Y" checked></td>';
                 innerHTML +=    '<td><input type = "checkbox" name="chkSubAlbum"></td>';
                 innerHTML +=    '<td>' + album.title + '</td>';
                 innerHTML +=    '<td>' + album.singer + '</td>';
@@ -252,7 +248,7 @@
         delRow: function () {
 
             this.albumDownloadList.forEach((album, index) => {
-                if($('#listSubAlbum tr.selectedRow').index() == index) {
+                if ($('#listSubAlbum tr.selectedRow').index() == index) {
                     $('input[type="checkbox"][name="chkSubAlbum"]:checked').closest('tr').remove();
                     this.albumDownloadList.splice(index);
                 }
@@ -260,18 +256,24 @@
         },
         downloadAlbumList: function () {
 
-            $.ajax({
-                data: JSON.stringify(this.albumDownloadList),
-                contentType: 'application/json',
-                url: '/download',
-                type: 'POST',
-                success: (data) => {
-                    alert("다운로드 되었습니다.");
-                },
-                error: (error) => {
-                    alert("오류가 발생하였습니다.");
-                }
-            });
+            debugger;
+            // const data = {
+            //     hessed: this.albumDownloadList,
+            //     dunamis: $('input[name=rdoSubAlbum]:checked').val()
+            // };
+
+            // $.ajax({
+            //     data: JSON.stringify(this.albumDownloadList),
+            //     contentType: 'application/json',
+            //     url: '/download',
+            //     type: 'POST',
+            //     success: (data) => {
+            //         alert("다운로드 되었습니다.");
+            //     },
+            //     error: (error) => {
+            //         alert("오류가 발생하였습니다.");
+            //     }
+            // });
         },
     };
 

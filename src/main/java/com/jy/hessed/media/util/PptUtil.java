@@ -17,50 +17,54 @@ import java.util.Map;
 
 public class PptUtil {
 
-    public static void makePpt(List<Map<String, Object>> albumList) {
+    public static void makePpt(List<Map<String, Object>> hessedAlbumList) {
 
         try {
 
-            FileInputStream fis = new FileInputStream("/Users/cjy/Templete.pptx");
+            if(hessedAlbumList == null) {
+                // TODO Exception
+            }
+
+            FileInputStream fis = new FileInputStream(MediaConstants.FILE_PATH + "Templete.pptx");
             XMLSlideShow ppt = new XMLSlideShow(fis);
 
             fis.close();
 
+            /* Template Load */
             XSLFSlide slideTemplate = ppt.getSlides().get(0);
             XSLFSlideLayout slideLayout = slideTemplate.getSlideLayout();
 
-            /* Hessed */
-            for(Map<String, Object> hessedAlbumMap : albumList) {
+            /* Create Hessed Praise PPT */
+            hessedAlbumList.forEach(hessedAlbum -> {
 
-                for(Map.Entry<String, Object> hessedAlbum : hessedAlbumMap.entrySet()) {
+                hessedAlbum.entrySet().stream().filter(album -> "title".equals(album.getKey()) || "lyrics".equals(album.getKey())).forEach(albumDetail -> {
 
-                    if("title".equals(hessedAlbum.getKey())) {
-
+                    if ("title".equals(albumDetail.getKey())) {
                         XSLFSlide titleSlide = ppt.createSlide(slideLayout);
-                        createHessedSlide(titleSlide, new Rectangle2D.Double(0.0, 10.0, 960.0, 50.892204724409446), hessedAlbum.getValue().toString());
+                        createHessedSlide(titleSlide, new Rectangle2D.Double(0.0, 10.0, 960.0, 50.892204724409446), albumDetail.getValue().toString());
+                    } else {
 
-                    } else if("lyrics".equals(hessedAlbum.getKey())) {
+                        List<String> lyricsPairsList = pairsLyrics(albumDetail.getValue().toString());
 
-                        List<String> lyricsPairsList = pairsLyrics(hessedAlbum.getValue().toString());
-
-                        for(String lyric : lyricsPairsList) {
-
+                        for (String lyric : lyricsPairsList) {
                             XSLFSlide lyricSlide = ppt.createSlide(slideLayout);
                             createHessedSlide(lyricSlide, new Rectangle2D.Double(0.0, -12.0, 960.0, 94.51409448818897), lyric);
                         }
 
                         lyricsPairsList.clear();
                     }
-                }
-            }
+                });
+            });
 
-            /* TODO Dunamis */
+            /* TODO Create Dunamis Praise PPT */
 
+
+            /* Create Final PPT */
             LocalDate now = LocalDate.now();
-            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy.MM.dd");
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern(MediaConstants.DATE_FORMAT);
             String currentDate = now.format(formatter);
 
-            FileOutputStream out = new FileOutputStream("/Users/cjy/" + currentDate + MediaConstants.UPPER_DEPT + MediaConstants.EXTENSION);
+            FileOutputStream out = new FileOutputStream(MediaConstants.FILE_PATH + currentDate + MediaConstants.UPPER_DEPT + MediaConstants.EXTENSION);
 
             ppt.write(out);
             out.close();
@@ -92,9 +96,9 @@ public class PptUtil {
     private static void createHessedSlide(XSLFSlide slide, Rectangle2D rectangle, String text) {
 
         /*
-        * textBox.setAnchor(new Rectangle2D.Double(375.0, 433.0, 585.0, 94.51409448818897)); 두나미스 찬양 제목
-        * paragraph.setTextAlign(TextParagraph.TextAlign.RIGHT); 두나미스 찬양 제목
-        * */
+         * textBox.setAnchor(new Rectangle2D.Double(375.0, 433.0, 585.0, 94.51409448818897)); 두나미스 찬양 제목
+         * paragraph.setTextAlign(TextParagraph.TextAlign.RIGHT); 두나미스 찬양 제목
+         * */
         XSLFTextBox textBox = slide.createTextBox();
 
         textBox.setAnchor(rectangle);
@@ -131,20 +135,19 @@ public class PptUtil {
                     double x = textBox.getAnchor().getX();
                     double y = textBox.getAnchor().getY();
 
-                    System.out.println(width + " x " + height + "\n" + x + ", " + y);
-
                     Color fillColor = textBox.getFillColor();
-                    System.out.println("텍스트 박스 채우기 색상: " + fillColor);
+
+                    System.out.println("Width : " + width + "\n" + "Height : " + height + "\n" + "x : " + x + "\n" + "y : " + y);
+                    System.out.println("TextBox Fill Color : " + fillColor);
 
                     for (XSLFTextParagraph paragraph : textBox.getTextParagraphs()) {
-
                         for (XSLFTextRun run : paragraph.getTextRuns()) {
 
                             String fontFamily = run.getFontFamily();
                             double fontSize = run.getFontSize();
 
-                            System.out.println("폰트: " + fontFamily);
-                            System.out.println("폰트 크기: " + fontSize);
+                            System.out.println("Font : " + fontFamily);
+                            System.out.println("Font Size : " + fontSize);
                         }
                     }
                 }

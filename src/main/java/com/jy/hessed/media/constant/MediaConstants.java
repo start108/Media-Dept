@@ -9,4 +9,8 @@ public class MediaConstants {
     public static final String EXTENSION = ".pptx";
 
     public static final String UPPER_DEPT = " 청년부 예배";
+
+    public static final String DATE_FORMAT = "yyyy.MM.dd";
+
+    public static final String FILE_PATH = "/Users/cjy/";
 }
