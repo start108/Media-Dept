@@ -73,10 +73,10 @@ public class MediaDeptService {
         return MediaDTO.builder().build();
     }
 
-    public MediaDTO makePpt(List<Map<String, Object>> albumList) throws IOException {
+    public MediaDTO makePpt(Map<String, Object> hessed) throws IOException {
 
-//        PptUtil.getBox();
-        PptUtil.makePpt(albumList);
+        PptUtil.getBox();
+        PptUtil.makePpt(hessed);
 
         return MediaDTO.builder().build();
     }

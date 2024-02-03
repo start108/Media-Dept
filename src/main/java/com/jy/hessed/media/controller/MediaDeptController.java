@@ -21,7 +21,7 @@ public class MediaDeptController {
     }
 
     @PostMapping(value = "/download")
-    public MediaDTO makePpt(@RequestBody List<Map<String, Object>> albumList) throws IOException {
-        return mediaDeptService.makePpt(albumList);
+    public MediaDTO makePpt(@RequestBody Map<String, Object> hessed) throws IOException {
+        return mediaDeptService.makePpt(hessed);
     }
 }

@@ -12,20 +12,21 @@ import java.io.IOException;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 public class PptUtil {
 
-    public static void makePpt(List<Map<String, Object>> hessedAlbumList) {
+    public static void makePpt(Map<String, Object> praise) {
 
         try {
 
-            if(hessedAlbumList == null) {
+            if(praise == null) {
                 // TODO Exception
             }
 
-            FileInputStream fis = new FileInputStream(MediaConstants.FILE_PATH + "Templete.pptx");
+            FileInputStream fis = new FileInputStream(MediaConstants.FILE_PATH + "Test.pptx");
             XMLSlideShow ppt = new XMLSlideShow(fis);
 
             fis.close();
@@ -34,21 +35,23 @@ public class PptUtil {
             XSLFSlide slideTemplate = ppt.getSlides().get(0);
             XSLFSlideLayout slideLayout = slideTemplate.getSlideLayout();
 
+            List<Map<String, Object>> hessed = (List<Map<String, Object>>) praise.get("hessed");
+
             /* Create Hessed Praise PPT */
-            hessedAlbumList.forEach(hessedAlbum -> {
+            hessed.forEach(hessedAlbum -> {
 
                 hessedAlbum.entrySet().stream().filter(album -> "title".equals(album.getKey()) || "lyrics".equals(album.getKey())).forEach(albumDetail -> {
 
                     if ("title".equals(albumDetail.getKey())) {
                         XSLFSlide titleSlide = ppt.createSlide(slideLayout);
-                        createHessedSlide(titleSlide, new Rectangle2D.Double(0.0, 10.0, 960.0, 50.892204724409446), albumDetail.getValue().toString());
+                        createHessedSlide(titleSlide, new Rectangle2D.Double(0.0, 10.0, 960.0, 50.892204724409446), albumDetail.getValue().toString(), "hessed");
                     } else {
 
                         List<String> lyricsPairsList = pairsLyrics(albumDetail.getValue().toString());
 
                         for (String lyric : lyricsPairsList) {
                             XSLFSlide lyricSlide = ppt.createSlide(slideLayout);
-                            createHessedSlide(lyricSlide, new Rectangle2D.Double(0.0, -12.0, 960.0, 94.51409448818897), lyric);
+                            createHessedSlide(lyricSlide, new Rectangle2D.Double(0.0, -12.0, 960.0, 94.51409448818897), lyric, "hessed");
                         }
 
                         lyricsPairsList.clear();
@@ -56,8 +59,26 @@ public class PptUtil {
                 });
             });
 
-            /* TODO Create Dunamis Praise PPT */
+            /* Create Dunamis Praise PPT */
+            Map<String, Object> dunamis = (Map<String, Object>) praise.get("dunamis");
 
+            dunamis.entrySet().stream().filter(album -> "title".equals(album.getKey()) || "lyrics".equals(album.getKey())).forEach(albumDetail -> {
+
+                if ("title".equals(albumDetail.getKey())) {
+
+                    // TODO 두나미스 찬양 제목 위치 조정하기
+                } else {
+
+                    List<String> lyricsPairsList = pairsLyrics(albumDetail.getValue().toString());
+
+                    for (String lyric : lyricsPairsList) {
+                        XSLFSlide lyricSlide = ppt.createSlide(slideLayout);
+                        createHessedSlide(lyricSlide, new Rectangle2D.Double(375.0, 433.0, 650.0, 94.51409448818897), lyric, "dunamis");
+                    }
+
+                    lyricsPairsList.clear();
+                }
+            });
 
             /* Create Final PPT */
             LocalDate now = LocalDate.now();
@@ -93,12 +114,18 @@ public class PptUtil {
         return lyricsPairsList;
     }
 
-    private static void createHessedSlide(XSLFSlide slide, Rectangle2D rectangle, String text) {
+    private static void createHessedSlide(XSLFSlide slide, Rectangle2D rectangle, String text, String se) {
 
-        /*
-         * textBox.setAnchor(new Rectangle2D.Double(375.0, 433.0, 585.0, 94.51409448818897)); 두나미스 찬양 제목
-         * paragraph.setTextAlign(TextParagraph.TextAlign.RIGHT); 두나미스 찬양 제목
-         * */
+        slide.clear();
+
+        if("hessed".equals(se)) {
+
+            XSLFTextBox dimmedBox = slide.createTextBox();
+
+            dimmedBox.setAnchor(new Rectangle2D.Double(0.0, -12.0, 960.0, 105.0));
+            dimmedBox.setFillColor(new Color(13, 13, 13));
+        }
+
         XSLFTextBox textBox = slide.createTextBox();
 
         textBox.setAnchor(rectangle);
@@ -112,14 +139,20 @@ public class PptUtil {
         run.setFontFamily(MediaConstants.FONT_FAMILY);
         run.setFontSize(MediaConstants.FONT_SIZE);
 
-        paragraph.setTextAlign(TextParagraph.TextAlign.CENTER);
+        if("hessed".equals(se)) {
+            paragraph.setTextAlign(TextParagraph.TextAlign.CENTER);
+        } else {
+            paragraph.setTextAlign(TextParagraph.TextAlign.RIGHT);
+        }
     }
 
     public static void getBox() {
 
         try {
 
-            FileInputStream fis = new FileInputStream("/Users/cjy/2024 청년부(Test).pptx");
+//            FileInputStream fis = new FileInputStream("/Users/cjy/2024 청년부(Test).pptx");
+//            FileInputStream fis = new FileInputStream("/Users/cjy/Templete.pptx");
+            FileInputStream fis = new FileInputStream("/Users/cjy/Test.pptx");
             XMLSlideShow ppt = new XMLSlideShow(fis);
             fis.close();
 

@@ -33,6 +33,14 @@
         padding: 10px;
     }
 
+    div.right-1 {
+        height: 50%;
+    }
+
+    div.right-2 {
+        height: 50%;
+    }
+
     table {
         border-collapse: separate;
         border-spacing: 0;
@@ -85,7 +93,7 @@
 </style>
 <body>
 <!--<p th:text="'테스트 ' + ${data}">테스트 중</p>-->
-<input type="text" id="title" value="">
+<input type="text" id="title" value="그리스도의 계절">
 <button type="button" id="getAlbum">조회</button>
 <button type="button" id="downloadAlbumList">다운로드</button>
 <button type="button" id="addRow">+</button>
@@ -95,7 +103,7 @@
         <!--        <div class="btn-right-area">-->
         <!--            -->
         <!--        </div>-->
-        <table id="tblListAlbum">
+        <table>
             <thead>
             <tr>
                 <th></th>
@@ -108,17 +116,31 @@
         </table>
     </div>
     <div class="right">
-        <table>
-            <thead>
-            <tr>
-                <th></th>
-                <th></th>
-                <th>앨범명</th>
-                <th>가수</th>
-            </tr>
-            </thead>
-            <tbody id="listSubAlbum"></tbody>
-        </table>
+        <div class="right-1">
+            <button type="button" id="addDunamisRow">+</button>
+            <table>
+                <thead>
+                <tr>
+                    <th></th>
+                    <th>앨범명</th>
+                    <th>가수</th>
+                </tr>
+                </thead>
+                <tbody id="listSubAlbum"></tbody>
+            </table>
+        </div>
+        <div class="right-2">
+            <table>
+                <thead>
+                <tr>
+                    <th></th>
+                    <th>앨범명</th>
+                    <th>가수</th>
+                </tr>
+                </thead>
+                <tbody id="listDunamisAlbum"></tbody>
+            </table>
+        </div>
     </div>
 </div>
 </body>
@@ -126,12 +148,15 @@
 <script th:inline="javascript">
     const media = {
         albumList: [],
-        albumDownloadList: [],
+        albumHessedList: [],
+        albumDunamisList: {},
         init: function () {
 
             $('#getAlbum').on('click', () => this.getAlbumList());
 
             $('#addRow').on('click', () => this.addRow());
+
+            $('#addDunamisRow').on('click', () => this.addDunamisRow());
 
             $('#delRow').on('click', () => this.delRow());
 
@@ -203,7 +228,7 @@
 
                     let innerHTML = "";
 
-                    data.albumList.forEach((album, index) => {
+                    data.albumList.forEach((album) => {
 
                         innerHTML += '<tr>';
                         innerHTML += '<td><input type="checkbox" name="chkMainAlbum"></td>';
@@ -212,9 +237,6 @@
                         innerHTML += '<td>' + album.date + '</td>';
                         // innerHTML +=    '<td>' + album.lyric.replaceAll("\n", "<br>") + '</td>';
                         innerHTML += '</tr>';
-                        // innerHTML += '<tr>';
-                        // innerHTML +=    '<td colspan="5"><button type="button" id = "btnLyric' + index + '">↓</button></td>';
-                        // innerHTML += '</tr>';
                     });
 
                     $("#listMainAlbum").append(innerHTML);
@@ -231,7 +253,6 @@
                 let innerHTML = "";
 
                 innerHTML += '<tr>';
-                innerHTML +=    '<td><input type = "radio" name="rdoSubAlbum"  value="Y" checked></td>';
                 innerHTML +=    '<td><input type = "checkbox" name="chkSubAlbum"></td>';
                 innerHTML +=    '<td>' + album.title + '</td>';
                 innerHTML +=    '<td>' + album.singer + '</td>';
@@ -239,7 +260,7 @@
 
                 $('#listSubAlbum').append(innerHTML);
 
-                this.albumDownloadList.push(album);
+                this.albumHessedList.push(album);
             });
 
             $('input[type="checkbox"][name="chkMainAlbum"]').prop('checked', false);
@@ -247,33 +268,52 @@
         },
         delRow: function () {
 
-            this.albumDownloadList.forEach((album, index) => {
+            this.albumHessedList.forEach((album, index) => {
                 if ($('#listSubAlbum tr.selectedRow').index() == index) {
                     $('input[type="checkbox"][name="chkSubAlbum"]:checked').closest('tr').remove();
-                    this.albumDownloadList.splice(index);
+                    this.albumHessedList.splice(index);
                 }
             });
         },
+        addDunamisRow: function () {
+
+            this.albumHessedList.filter((album, index) => $('#listSubAlbum tr.selectedRow').index() == index).forEach((album) => {
+
+                let innerHTML = "";
+
+                innerHTML += '<tr>';
+                innerHTML +=    '<td><input type = "checkbox" name="chkDunamisAlbum"></td>';
+                innerHTML +=    '<td>' + album.title + '</td>';
+                innerHTML +=    '<td>' + album.singer + '</td>';
+                innerHTML += '</tr>';
+
+                $('#listDunamisAlbum').append(innerHTML);
+
+                this.albumDunamisList = album;
+            });
+
+            $('input[type="checkbox"][name="chkSubAlbum"]').prop('checked', false);
+            $('#listSubAlbum tr').removeClass('selectedRow');
+        },
         downloadAlbumList: function () {
 
-            debugger;
-            // const data = {
-            //     hessed: this.albumDownloadList,
-            //     dunamis: $('input[name=rdoSubAlbum]:checked').val()
-            // };
+            const data = {
+                hessed: this.albumHessedList,
+                dunamis: this.albumDunamisList
+            };
 
-            // $.ajax({
-            //     data: JSON.stringify(this.albumDownloadList),
-            //     contentType: 'application/json',
-            //     url: '/download',
-            //     type: 'POST',
-            //     success: (data) => {
-            //         alert("다운로드 되었습니다.");
-            //     },
-            //     error: (error) => {
-            //         alert("오류가 발생하였습니다.");
-            //     }
-            // });
+            $.ajax({
+                data: JSON.stringify(data),
+                contentType: 'application/json',
+                url: '/download',
+                type: 'POST',
+                success: (data) => {
+                    alert("다운로드 되었습니다.");
+                },
+                error: (error) => {
+                    alert("오류가 발생하였습니다.");
+                }
+            });
         },
     };
 
