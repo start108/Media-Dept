@@ -8,6 +8,9 @@ spring:
     restart:
       enabled: true
 
+cache:
+  ttl: # time to live
+    default: 3600000
 #logging:
 #  config: classpath:log4j2.xml
 

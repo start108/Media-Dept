@@ -17,7 +17,7 @@ public class MediaDeptController {
 
     @GetMapping(value = "/album")
     public MediaDTO callAlbumList(@RequestParam("title") String title) {
-        return mediaDeptService.callAlbumList(title);
+        return mediaDeptService.callAlbum(title);
     }
 
     @PostMapping(value = "/download")

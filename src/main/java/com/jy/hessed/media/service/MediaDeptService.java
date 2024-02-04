@@ -1,5 +1,6 @@
 package com.jy.hessed.media.service;
 
+import com.jy.hessed.media.constant.MediaConstants;
 import com.jy.hessed.media.dto.MediaDTO;
 import com.jy.hessed.media.util.PptUtil;
 import lombok.extern.slf4j.Slf4j;
@@ -8,6 +9,7 @@ import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
@@ -24,16 +26,16 @@ public class MediaDeptService {
     @Value("${naver.crawling.url}")
     private String crawlingUrl;
 
-    public MediaDTO callAlbumList(String query) {
+    @Cacheable(MediaConstants.ALBUM_INFORMATION)
+    public MediaDTO callAlbum(String query) {
 
         try {
 
             String searchUrl = crawlingUrl + URLEncoder.encode(query, "UTF-8");
-            Document searchDocument = Jsoup.connect(searchUrl).get();
+            Document searchDocument = Jsoup.connect(searchUrl).timeout(30000).get();
 
             Elements musicResultSearch = searchDocument.select("section.sc_new.sp_pmusic._fe_music_collection");
 
-            // TODO Exception
             if (musicResultSearch.size() == 0) {
             }
 
@@ -42,7 +44,7 @@ public class MediaDeptService {
             List<Map<String, Object>> albumList = new ArrayList<>();
             Map<String, Object> album = null;
 
-            for(Element list : listEl) {
+            for (Element list : listEl) {
 
                 album = new HashMap<>();
 
@@ -60,7 +62,7 @@ public class MediaDeptService {
                 albumList.add(album);
             }
 
-            if(albumList.size() == 0) {
+            if (albumList.size() == 0) {
             }
 
             return MediaDTO.builder().albumList(albumList).build();
@@ -72,7 +74,7 @@ public class MediaDeptService {
         return MediaDTO.builder().build();
     }
 
-    public MediaDTO makePpt(Map<String, Object> hessed) throws IOException {
+    public MediaDTO makePpt(Map<String, Object> hessed) {
 
         // PptUtil.getBox();
         PptUtil.makePpt(hessed);
