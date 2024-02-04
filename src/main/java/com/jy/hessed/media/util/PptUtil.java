@@ -50,9 +50,10 @@ public class PptUtil {
                     if ("title".equals(albumDetail.getKey())) {
 
                         XSLFSlide titleSlide = ppt.createSlide(defaultSlideLayout);
+                        Rectangle2D titleTextBox = new Rectangle2D.Double(0.0, 23.053858267716535, 960.0, 50.892204724409446); // new Rectangle2D.Double(0.0, 8.0, 960.0, 50.892204724409446)
                         String hessedPraiseTitle = albumDetail.getValue().toString();
 
-                        createHessedSlide(titleSlide, new Rectangle2D.Double(0.0, 23.053858267716535, 960.0, 50.892204724409446), hessedPraiseTitle, "hessed"); // new Rectangle2D.Double(0.0, 8.0, 960.0, 50.892204724409446)
+                        createHessedSlide(titleSlide, titleTextBox, hessedPraiseTitle, "hessed");
                     } else {
 
                         String hessedPraiseLyric = albumDetail.getValue().toString();
@@ -60,7 +61,8 @@ public class PptUtil {
 
                         for (String lyrics : lyricsPairsList) {
                             XSLFSlide lyricSlide = ppt.createSlide(defaultSlideLayout);
-                            createHessedSlide(lyricSlide, new Rectangle2D.Double(0.0, 1.2429133858267716, 960.0, 94.51409448818897), lyrics, "hessed"); // new Rectangle2D.Double(0.0, -10.0, 960.0, 94.51409448818897)
+                            Rectangle2D lyricsTextBox = new Rectangle2D.Double(0.0, 1.2429133858267716, 960.0, 94.51409448818897); // new Rectangle2D.Double(0.0, -10.0, 960.0, 94.51409448818897)
+                            createHessedSlide(lyricSlide, lyricsTextBox, lyrics, "hessed");
                         }
 
                         lyricsPairsList.clear();
@@ -80,9 +82,10 @@ public class PptUtil {
                 if ("title".equals(albumDetail.getKey())) {
 
                     XSLFSlide titleSlide = ppt.createSlide(offeringSlideLayout);
+                    Rectangle2D titleTextBox = new Rectangle2D.Double(448.0, 489.10779527559055, 512.0, 50.892204724409446);
                     String dunamisPraiseTitle = albumDetail.getValue().toString();
 
-                    createHessedSlide(titleSlide, new Rectangle2D.Double(448.0, 489.10779527559055, 512.0, 50.892204724409446), dunamisPraiseTitle, "dunamis");
+                    createHessedSlide(titleSlide, titleTextBox, dunamisPraiseTitle, "dunamis");
                 } else {
 
                     String dunamisPraiseLyric = albumDetail.getValue().toString();
@@ -90,7 +93,8 @@ public class PptUtil {
 
                     for (String lyrics : lyricsPairsList) {
                         XSLFSlide lyricSlide = ppt.createSlide(offeringSlideLayout);
-                        createHessedSlide(lyricSlide, new Rectangle2D.Double(375.0, 445.48590551181104, 585.0, 94.51409448818897), lyrics, "dunamis"); // new Rectangle2D.Double(375.0, 433.0, 650.0, 94.51409448818897)
+                        Rectangle2D lyricsTextBox = new Rectangle2D.Double(375.0, 445.48590551181104, 585.0, 94.51409448818897); // new Rectangle2D.Double(375.0, 433.0, 650.0, 94.51409448818897)
+                        createHessedSlide(lyricSlide, lyricsTextBox, lyrics, "dunamis");
                     }
 
                     lyricsPairsList.clear();
