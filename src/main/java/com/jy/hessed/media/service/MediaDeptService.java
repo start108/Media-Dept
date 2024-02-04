@@ -60,7 +60,6 @@ public class MediaDeptService {
                 albumList.add(album);
             }
 
-            // TODO Exception
             if(albumList.size() == 0) {
             }
 
@@ -75,7 +74,7 @@ public class MediaDeptService {
 
     public MediaDTO makePpt(Map<String, Object> hessed) throws IOException {
 
-        PptUtil.getBox();
+        // PptUtil.getBox();
         PptUtil.makePpt(hessed);
 
         return MediaDTO.builder().build();

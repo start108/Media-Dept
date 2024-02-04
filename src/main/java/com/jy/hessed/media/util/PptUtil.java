@@ -1,6 +1,7 @@
 package com.jy.hessed.media.util;
 
 import com.jy.hessed.media.constant.MediaConstants;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.poi.sl.usermodel.TextParagraph;
 import org.apache.poi.xslf.usermodel.*;
 
@@ -11,47 +12,53 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.*;
 import java.util.List;
-import java.util.Map;
+import java.util.regex.Pattern;
 
+@Slf4j
 public class PptUtil {
 
     public static void makePpt(Map<String, Object> praise) {
 
-        try {
+        /** Get date to set file name **/
+        LocalDate now = LocalDate.now();
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern(MediaConstants.DATE_FORMAT);
+        String currentDate = now.format(formatter);
 
-            if(praise == null) {
-                // TODO Exception
-            }
+        try (
+                FileInputStream fis = new FileInputStream(MediaConstants.FILE_PATH + "Test.pptx");
+                FileOutputStream fos = new FileOutputStream(MediaConstants.FILE_PATH + currentDate + MediaConstants.UPPER_DEPT + MediaConstants.EXTENSION);
+        ) {
 
-            FileInputStream fis = new FileInputStream(MediaConstants.FILE_PATH + "Test.pptx");
+            /** PPT Template File Load **/
             XMLSlideShow ppt = new XMLSlideShow(fis);
 
-            fis.close();
-
-            /* Template Load */
+            /** PPT Template Slide Load **/
             XSLFSlide slideTemplate = ppt.getSlides().get(0);
             XSLFSlideLayout slideLayout = slideTemplate.getSlideLayout();
 
-            List<Map<String, Object>> hessed = (List<Map<String, Object>>) praise.get("hessed");
+            /** Create Hessed Praise PPT **/
+            List<Map<String, Object>> hessedPpt = (List<Map<String, Object>>) praise.get("hessed");
 
-            /* Create Hessed Praise PPT */
-            hessed.forEach(hessedAlbum -> {
+            hessedPpt.forEach(hessedAlbum -> {
 
                 hessedAlbum.entrySet().stream().filter(album -> "title".equals(album.getKey()) || "lyrics".equals(album.getKey())).forEach(albumDetail -> {
 
                     if ("title".equals(albumDetail.getKey())) {
+
                         XSLFSlide titleSlide = ppt.createSlide(slideLayout);
-                        createHessedSlide(titleSlide, new Rectangle2D.Double(0.0, 10.0, 960.0, 50.892204724409446), albumDetail.getValue().toString(), "hessed");
+                        String hessedPraiseTitle = albumDetail.getValue().toString();
+
+                        createHessedSlide(titleSlide, new Rectangle2D.Double(0.0, 23.053858267716535, 960.0, 50.892204724409446), hessedPraiseTitle, "hessed"); // new Rectangle2D.Double(0.0, 8.0, 960.0, 50.892204724409446)
                     } else {
 
-                        List<String> lyricsPairsList = pairsLyrics(albumDetail.getValue().toString());
+                        String hessedPraiseLyric = albumDetail.getValue().toString();
+                        List<String> lyricsPairsList = lyricsPairs(hessedPraiseLyric);
 
-                        for (String lyric : lyricsPairsList) {
+                        for (String lyrics : lyricsPairsList) {
                             XSLFSlide lyricSlide = ppt.createSlide(slideLayout);
-                            createHessedSlide(lyricSlide, new Rectangle2D.Double(0.0, -12.0, 960.0, 94.51409448818897), lyric, "hessed");
+                            createHessedSlide(lyricSlide, new Rectangle2D.Double(0.0, 1.2429133858267716, 960.0, 94.51409448818897), lyrics, "hessed"); // new Rectangle2D.Double(0.0, -10.0, 960.0, 94.51409448818897)
                         }
 
                         lyricsPairsList.clear();
@@ -59,48 +66,47 @@ public class PptUtil {
                 });
             });
 
-            /* Create Dunamis Praise PPT */
-            Map<String, Object> dunamis = (Map<String, Object>) praise.get("dunamis");
+            /** Create Dunamis Praise PPT **/
+            Map<String, Object> dunamisPpt = (Map<String, Object>) praise.get("dunamis");
 
-            dunamis.entrySet().stream().filter(album -> "title".equals(album.getKey()) || "lyrics".equals(album.getKey())).forEach(albumDetail -> {
+            dunamisPpt.entrySet().stream().filter(album -> "title".equals(album.getKey()) || "lyrics".equals(album.getKey())).forEach(albumDetail -> {
 
                 if ("title".equals(albumDetail.getKey())) {
 
-                    // TODO 두나미스 찬양 제목 위치 조정하기
+                    XSLFSlide titleSlide = ppt.createSlide(slideLayout);
+                    String dunamisPraiseTitle = albumDetail.getValue().toString();
+
+                    createHessedSlide(titleSlide, new Rectangle2D.Double(448.0, 489.10779527559055, 512.0, 50.892204724409446), dunamisPraiseTitle, "dunamis");
                 } else {
 
-                    List<String> lyricsPairsList = pairsLyrics(albumDetail.getValue().toString());
+                    String dunamisPraiseLyric = albumDetail.getValue().toString();
+                    List<String> lyricsPairsList = lyricsPairs(dunamisPraiseLyric);
 
-                    for (String lyric : lyricsPairsList) {
+                    for (String lyrics : lyricsPairsList) {
                         XSLFSlide lyricSlide = ppt.createSlide(slideLayout);
-                        createHessedSlide(lyricSlide, new Rectangle2D.Double(375.0, 433.0, 650.0, 94.51409448818897), lyric, "dunamis");
+                        createHessedSlide(lyricSlide, new Rectangle2D.Double(375.0, 445.48590551181104, 585.0, 94.51409448818897), lyrics, "dunamis"); // new Rectangle2D.Double(375.0, 433.0, 650.0, 94.51409448818897)
                     }
 
                     lyricsPairsList.clear();
                 }
             });
 
-            /* Create Final PPT */
-            LocalDate now = LocalDate.now();
-            DateTimeFormatter formatter = DateTimeFormatter.ofPattern(MediaConstants.DATE_FORMAT);
-            String currentDate = now.format(formatter);
-
-            FileOutputStream out = new FileOutputStream(MediaConstants.FILE_PATH + currentDate + MediaConstants.UPPER_DEPT + MediaConstants.EXTENSION);
-
-            ppt.write(out);
-            out.close();
+            /** Create Final PPT **/
+            ppt.write(fos);
 
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
 
-    private static List<String> pairsLyrics(String parameter) {
+    private static List<String> lyricsPairs(String parameter) {
 
         List<String> lyricsPairsList = new ArrayList<>();
 
         String lyrics = parameter;
         String[] lines = lyrics.split("\\n");
+
+        lines = Arrays.stream(lines).filter(line -> !regexCheck(line)).toArray(String[]::new);
 
         for (int i = 0; i < lines.length; i += 2) {
             if (i + 1 < lines.length) {
@@ -122,7 +128,7 @@ public class PptUtil {
 
             XSLFTextBox dimmedBox = slide.createTextBox();
 
-            dimmedBox.setAnchor(new Rectangle2D.Double(0.0, -12.0, 960.0, 105.0));
+            dimmedBox.setAnchor(new Rectangle2D.Double(0.0, 0.0, 960.0, 97.0)); // new Rectangle2D.Double(0.0, -12.0, 960.0, 105.0)
             dimmedBox.setFillColor(new Color(13, 13, 13));
         }
 
@@ -146,13 +152,20 @@ public class PptUtil {
         }
     }
 
+    private static boolean regexCheck(String sentence) {
+
+        Pattern pattern = Pattern.compile("[!@#$%^&*(),.?\":{}|<>x]");
+
+        return pattern.matcher(sentence).find();
+    }
+
     public static void getBox() {
 
         try {
 
-//            FileInputStream fis = new FileInputStream("/Users/cjy/2024 청년부(Test).pptx");
-//            FileInputStream fis = new FileInputStream("/Users/cjy/Templete.pptx");
-            FileInputStream fis = new FileInputStream("/Users/cjy/Test.pptx");
+            FileInputStream fis = new FileInputStream("/Users/cjy/2024 청년부(Test).pptx");
+            // FileInputStream fis = new FileInputStream("/Users/cjy/Templete.pptx");
+            // FileInputStream fis = new FileInputStream("/Users/cjy/Test.pptx");
             XMLSlideShow ppt = new XMLSlideShow(fis);
             fis.close();
 
