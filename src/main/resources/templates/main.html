@@ -151,6 +151,7 @@
         border: 2px solid #adb5bd;
         border-radius: 8px;
         padding: 10px;
+        height: 140px;
     }
     .todo-btn{
         margin: 5px 10px;
@@ -162,7 +163,7 @@
         height: 1.25rem;
     }
     .todo-header{
-        height: 40px;
+        /*height: 40px;*/
         border-bottom: 1px solid #bdc3c7;
     }
     .todo-header-item{
@@ -184,15 +185,16 @@
         display: table;
         table-layout: fixed;
         width: 100%;
+        border-bottom: 1px solid #bdc3c7;
     }
     .tab_list .item {
         display: table-cell;
         text-align: center;
         vertical-align: middle;
     }
-    /*.todo-display-none{*/
-    /*    display: none;*/
-    /*}*/
+    .todo-display-none{
+        display: none;
+    }
     .todo-done-text{
         text-decoration: line-through;
         color: #999999;
@@ -222,6 +224,9 @@
         font-size: 0.7rem;
         color: #FF5733;
     }
+    .hessedList {
+
+    }
 </style>
 <body>
 <!--<div class="btn-right-area">-->
@@ -233,60 +238,26 @@
 <!--</div>-->
 <div>
     <div class="top">
-        <!--todo-->
         <div id="todo-list">
-            <div class="todo-div todo-display-none" id="todo-div0">
-<!--                <ul>-->
-<!--                    <li>-->
-<!--                        <div class="todo-header">-->
-<!--                            <div class="custom-control form-control-lg custom-checkbox todo-header-item col-sm-7">-->
-<!--                                &lt;!&ndash;                            <input type="checkbox" class="custom-control-input todo-header-item" id="customCheck0">&ndash;&gt;-->
-<!--                                <label class="custom-control-label todo-header-item" for="customCheck0"><h6 class="title title0">제목&lt;!&ndash;제목&ndash;&gt;</h6></label>-->
-<!--                                &lt;!&ndash;                    <span class="time-over todo-display-none" id="time-over0">&nbsp;(기한이 지났습니다.)</span>&ndash;&gt;-->
-<!--                            </div>-->
-<!--                            <div style="margin-top:4px;">-->
-<!--                                <span class="">가수</span>-->
-<!--                            </div>-->
-<!--                            <span class="todo-header-item col-sm-2">앨범명</span>-->
-<!--                            <span class="todo-header-item col-sm-2">발매일</span>-->
-<!--                        </div>-->
-<!--                    </li>-->
-<!--                </ul>-->
-                <div>
-                    <div class="todo-header">
-                        <ul class="tab_list">
-                            <input type="checkbox" id="scales" name="scales" checked>
-                            <li class="item">
-                                <label class="custom-control-label todo-header-item" for=""><h6 class="title">safsdafsda</h6></label>
-                            </li>
-                            <li class="item">
-                                fasfdasfdsafasdf
-                            </li>
-                            <li class="item">
-                                fasfdasfdsafasdf
-                            </li>
-                        </ul>
-                        <ul class="tab_list">
-                            <li class="item">
-                                safsdafsda
-                            </li>
-                            <li class="item">
-                                fasfdasfdsafasdf
-                            </li>
-                        </ul>
-                    </div>
-
+            <div id="todo-div" class="todo-div todo-display-none">
+                <div> <!--class="todo-header"-->
+                    <div id="musicList"></div>
                 </div>
-                <!--            <div class="todo-desc desc0">-->
-                <!--                &lt;!&ndash; 설명 &ndash;&gt;-->
-                <!--            </div>-->
-                <!--            <div class="todo-btn">-->
-                <!--                <button type="button" class="btn btn-outline-primary" data-toggle="modal" data-target="#updateModal" onclick="loadTask(0);">수정</button>-->
-                <!--                <button type="button" class="btn btn-outline-dark" onclick="deleteTodo(0);">삭제</button>-->
-                <!--            </div>-->
+                <div class="hessedList">
+<!--                    <button type="button" id="addDunamisRow">+</button>-->
+                    <table>
+                        <thead>
+                        <tr>
+                            <th></th>
+                            <th>앨범명</th>
+                            <th>가수</th>
+                        </tr>
+                        </thead>
+                        <tbody id="listSubAlbum"></tbody>
+                    </table>
+                </div>
             </div>
         </div>
-        <!--todo-->
     </div>
 <!--    <div class="bottom">-->
 <!--        <div class="left">-->
@@ -415,24 +386,49 @@
 
                     this.albumList = data.albumList;
 
-                    $("#listMainAlbum").empty();
+                    // $("#listMainAlbum").empty();
+                    //
+                    // let innerHTML = "";
+                    //
+                    // data.albumList.forEach((album) => {
+                    //
+                    //     innerHTML += '<tr>';
+                    //     innerHTML += '<td><input type="checkbox" name="chkMainAlbum"></td>';
+                    //     innerHTML += '<td>' + album.title + '</td>';
+                    //     innerHTML += '<td>' + album.singer + '</td>';
+                    //     innerHTML += '<td>' + album.date + '</td>';
+                    //     innerHTML += '</tr>';
+                    //
+                    //     // $('.title.title0').text(album.title);
+                    //     // $('.todo-desc.desc0').text(album.lyrics.replaceAll("\n", "<br>"));
+                    // });
+                    //
+                    // $("#listMainAlbum").append(innerHTML);
+
+                    $('#musicList').empty();
 
                     let innerHTML = "";
 
                     data.albumList.forEach((album) => {
 
-                        innerHTML += '<tr>';
-                        innerHTML += '<td><input type="checkbox" name="chkMainAlbum"></td>';
-                        innerHTML += '<td>' + album.title + '</td>';
-                        innerHTML += '<td>' + album.singer + '</td>';
-                        innerHTML += '<td>' + album.date + '</td>';
-                        innerHTML += '</tr>';
-
-                        // $('.title.title0').text(album.title);
-                        // $('.todo-desc.desc0').text(album.lyrics.replaceAll("\n", "<br>"));
+                        innerHTML += '<ul class="tab_list">'
+                        innerHTML += '<li class="item" style="float: left;">'
+                        innerHTML += '<input type="checkbox" id="scales" name="scales">'
+                        innerHTML += '</li>'
+                        innerHTML += '<li class="item">'
+                        innerHTML += '<div>'
+                        innerHTML += '<label class="custom-control-label todo-header-item"><a href=""><strong class="title">' + album.title + '</strong></a></label>'
+                        innerHTML += '<div>'
+                        innerHTML += '</li>'
+                        innerHTML += '<li class="item">' + album.title + '</li>';
+                        innerHTML += '<li class="item">' + album.singer + '</li>';
+                        innerHTML += '<li class="item">' + album.date + '</li>';
+                        innerHTML += '</ul>';
                     });
 
-                    $("#listMainAlbum").append(innerHTML);
+                    $('#todo-div').css('display', 'block');
+                    $("#musicList").append(innerHTML);
+
                 },
                 error: (error) => {
                     alert("오류가 발생하였습니다.")
