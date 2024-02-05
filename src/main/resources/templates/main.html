@@ -119,14 +119,6 @@
     button{
         border-style: groove;
     }
-    .shadow{
-        box-shadow: 3px 7px 7px rgba(0, 0, 0, 0.03);
-    }
-    h1{
-        text-align: center;
-        font-weight: 900;
-        margin: 2.5rem 0 1.5rem;
-    }
     .priority1{
         color: #FF5733;
     }
@@ -192,40 +184,22 @@
         text-align: center;
         vertical-align: middle;
     }
-    .todo-display-none{
+    .hiddenLyrics {
         display: none;
+        text-align: left;
     }
-    .todo-done-text{
-        text-decoration: line-through;
-        color: #999999;
+    .scrollable {
+        overflow: auto;
+        /*height: 200px;*/
     }
-
-    /* 페이징 처리 */
-    #pagination-demo{
-        display: inline-block;
-        margin-bottom: 1.75em;
-    }
-    #pagination-demo li{
-        display: inline-block;
-    }
-
-    .page-content{
-        background: #eee;
-        display: inline-block;
-        padding: 10px;
-        width: 100%;
-        max-width: 660px;
-    }
-    #pagination-btn{
-        margin: 20px auto;
-        width: 200px;
-    }
-    .time-over{
-        font-size: 0.7rem;
-        color: #FF5733;
-    }
-    .hessedList {
-
+    .musicList {
+        margin: 2px 0px;
+        /*border: 2px solid #adb5bd;*/
+        border-radius: 8px;
+        margin-top: 10px;
+        /*padding: 10px;*/
+        height: 140px;
+        display: none;
     }
 </style>
 <body>
@@ -239,26 +213,24 @@
 <div>
     <div class="top">
         <div id="todo-list">
-            <div id="todo-div" class="todo-div todo-display-none">
-                <div> <!--class="todo-header"-->
-                    <div id="musicList"></div>
-                </div>
-                <div class="hessedList">
+            <div id="musicList" class="musicList hidden"></div>
+<!--                <div class="hessedList">-->
 <!--                    <button type="button" id="addDunamisRow">+</button>-->
-                    <table>
-                        <thead>
-                        <tr>
-                            <th></th>
-                            <th>앨범명</th>
-                            <th>가수</th>
-                        </tr>
-                        </thead>
-                        <tbody id="listSubAlbum"></tbody>
-                    </table>
-                </div>
+<!--                    <table>-->
+<!--                        <thead>-->
+<!--                        <tr>-->
+<!--                            <th></th>-->
+<!--                            <th>앨범명</th>-->
+<!--                            <th>가수</th>-->
+<!--                        </tr>-->
+<!--                        </thead>-->
+<!--                        <tbody id="listSubAlbum"></tbody>-->
+<!--                    </table>-->
+<!--                </div>-->
             </div>
         </div>
     </div>
+
 <!--    <div class="bottom">-->
 <!--        <div class="left">-->
 <!--            &lt;!&ndash;        <div class="btn-right-area">&ndash;&gt;-->
@@ -374,6 +346,13 @@
                 row.addClass('selectedRow');
             });
         },
+        toggleRow: function (index) {
+
+            // const index = $('#listMainAlbum tr.selectedRow').index();
+            const row = document.getElementsByTagName('tr')[index * 2];
+
+            row.classList.toggle('hiddenLyrics');
+        },
         getAlbumList: function () {
 
             $.ajax({
@@ -386,48 +365,67 @@
 
                     this.albumList = data.albumList;
 
-                    // $("#listMainAlbum").empty();
+                    $("#musicList").empty();
+
+                    let innerHTML = "";
+
+                    innerHTML+= '<table>';
+                    innerHTML+=     '<thead>';
+                    innerHTML+=         '<tr>';
+                    innerHTML+=             '<th></th>';
+                    innerHTML+=             '<th></th>';
+                    innerHTML+=             '<th>제목</th>';
+                    innerHTML+=             '<th>가수</th>';
+                    innerHTML+=             '<th>앨범명</th>';
+                    innerHTML+=             '<th>발매일</th>';
+                    innerHTML+=         '</tr>';
+                    innerHTML+=     '</thead>';
+                    innerHTML+=     '<tbody>';
+
+                    data.albumList.forEach((album, index) => {
+
+                        innerHTML += '<tr class="scrollable">';
+                        innerHTML +=    '<td><input type="checkbox" name="chkMainAlbum"></td>';
+                        innerHTML +=    '<td><button type="button" class="btn btn-outline-secondary btn-sm" onclick="media.toggleRow(1)">+</button></td>';
+                        innerHTML +=    '<td>' + album.title + '</td>';
+                        innerHTML +=    '<td>' + album.singer + '</td>';
+                        innerHTML +=    '<td>' + album.singer + '</td>';
+                        innerHTML +=    '<td>' + album.date + '</td>';
+                        innerHTML += '</tr>';
+                        innerHTML += '<tr class="hiddenLyrics scrollable">';
+                        innerHTML +=    '<td colspan="6">' + album.lyrics.replaceAll("\n", "<br>") + '</td>';
+                        innerHTML += '</tr>';
+                    });
+
+                    innerHTML+=     '</tbody>';
+                    innerHTML+= '</table>';
+
+                    $('#musicList').css('display', 'block');
+                    $("#musicList").append(innerHTML);
+
+                    // $('#musicList').empty();
                     //
                     // let innerHTML = "";
                     //
                     // data.albumList.forEach((album) => {
                     //
-                    //     innerHTML += '<tr>';
-                    //     innerHTML += '<td><input type="checkbox" name="chkMainAlbum"></td>';
-                    //     innerHTML += '<td>' + album.title + '</td>';
-                    //     innerHTML += '<td>' + album.singer + '</td>';
-                    //     innerHTML += '<td>' + album.date + '</td>';
-                    //     innerHTML += '</tr>';
-                    //
-                    //     // $('.title.title0').text(album.title);
-                    //     // $('.todo-desc.desc0').text(album.lyrics.replaceAll("\n", "<br>"));
+                    //     innerHTML += '<ul class="tab_list">'
+                    //     innerHTML += '<li class="item" style="float: left;">'
+                    //     innerHTML += '<input type="checkbox" id="scales" name="scales">'
+                    //     innerHTML += '</li>'
+                    //     innerHTML += '<li class="item">'
+                    //     innerHTML += '<div>'
+                    //     innerHTML += '<label class="custom-control-label todo-header-item"><a href=""><strong class="title">' + album.title + '</strong></a></label>'
+                    //     innerHTML += '<div>'
+                    //     innerHTML += '</li>'
+                    //     innerHTML += '<li class="item">' + album.title + '</li>';
+                    //     innerHTML += '<li class="item">' + album.singer + '</li>';
+                    //     innerHTML += '<li class="item">' + album.date + '</li>';
+                    //     innerHTML += '</ul>';
                     // });
                     //
-                    // $("#listMainAlbum").append(innerHTML);
-
-                    $('#musicList').empty();
-
-                    let innerHTML = "";
-
-                    data.albumList.forEach((album) => {
-
-                        innerHTML += '<ul class="tab_list">'
-                        innerHTML += '<li class="item" style="float: left;">'
-                        innerHTML += '<input type="checkbox" id="scales" name="scales">'
-                        innerHTML += '</li>'
-                        innerHTML += '<li class="item">'
-                        innerHTML += '<div>'
-                        innerHTML += '<label class="custom-control-label todo-header-item"><a href=""><strong class="title">' + album.title + '</strong></a></label>'
-                        innerHTML += '<div>'
-                        innerHTML += '</li>'
-                        innerHTML += '<li class="item">' + album.title + '</li>';
-                        innerHTML += '<li class="item">' + album.singer + '</li>';
-                        innerHTML += '<li class="item">' + album.date + '</li>';
-                        innerHTML += '</ul>';
-                    });
-
-                    $('#todo-div').css('display', 'block');
-                    $("#musicList").append(innerHTML);
+                    // $('#todo-div').css('display', 'block');
+                    // $("#musicList").append(innerHTML);
 
                 },
                 error: (error) => {
