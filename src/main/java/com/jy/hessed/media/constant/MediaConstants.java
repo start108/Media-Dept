@@ -14,5 +14,7 @@ public class MediaConstants {
 
     public static final String FILE_PATH = "/Users/cjy/";
 
+    public static final String FILE_PATH_TEST = "classpath:/";
+
     public static final String ALBUM_INFORMATION = "ALBUM_INFORMATION";
 }

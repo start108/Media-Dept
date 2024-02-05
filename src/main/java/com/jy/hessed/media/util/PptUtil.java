@@ -12,10 +12,8 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.*;
 import java.util.List;
-import java.util.Map;
 import java.util.regex.Pattern;
 
 @Slf4j
@@ -45,7 +43,9 @@ public class PptUtil {
 
             hessedPpt.forEach(hessedAlbum -> {
 
-                hessedAlbum.entrySet().stream().filter(album -> "title".equals(album.getKey()) || "lyrics".equals(album.getKey())).forEach(albumDetail -> {
+                hessedAlbum.entrySet().stream()
+                        .filter(album -> "title".equals(album.getKey()) || "lyrics".equals(album.getKey()))
+                        .forEach(albumDetail -> {
 
                     if ("title".equals(albumDetail.getKey())) {
 
@@ -62,6 +62,7 @@ public class PptUtil {
                         for (String lyrics : lyricsPairsList) {
                             XSLFSlide lyricSlide = ppt.createSlide(defaultSlideLayout);
                             Rectangle2D lyricsTextBox = new Rectangle2D.Double(0.0, 1.2429133858267716, 960.0, 94.51409448818897); // new Rectangle2D.Double(0.0, -10.0, 960.0, 94.51409448818897)
+
                             createHessedSlide(lyricSlide, lyricsTextBox, lyrics, "hessed");
                         }
 
@@ -77,7 +78,9 @@ public class PptUtil {
             /** Create Dunamis Praise PPT **/
             Map<String, Object> dunamisPpt = (Map<String, Object>) praise.get("dunamis");
 
-            dunamisPpt.entrySet().stream().filter(album -> "title".equals(album.getKey()) || "lyrics".equals(album.getKey())).forEach(albumDetail -> {
+            dunamisPpt.entrySet().stream()
+                    .filter(album -> "title".equals(album.getKey()) || "lyrics".equals(album.getKey()))
+                    .forEach(albumDetail -> {
 
                 if ("title".equals(albumDetail.getKey())) {
 
@@ -94,6 +97,7 @@ public class PptUtil {
                     for (String lyrics : lyricsPairsList) {
                         XSLFSlide lyricSlide = ppt.createSlide(offeringSlideLayout);
                         Rectangle2D lyricsTextBox = new Rectangle2D.Double(375.0, 445.48590551181104, 585.0, 94.51409448818897); // new Rectangle2D.Double(375.0, 433.0, 650.0, 94.51409448818897)
+
                         createHessedSlide(lyricSlide, lyricsTextBox, lyrics, "dunamis");
                     }
 
@@ -116,7 +120,9 @@ public class PptUtil {
         String lyrics = parameter;
         String[] lines = lyrics.split("\\n");
 
-        lines = Arrays.stream(lines).filter(line -> !regexCheck(line)).toArray(String[]::new);
+        lines = Arrays.stream(lines)
+                .filter(line -> !regexCheck(line))
+                .toArray(String[]::new);
 
         for (int i = 0; i < lines.length; i += 2) {
             if (i + 1 < lines.length) {

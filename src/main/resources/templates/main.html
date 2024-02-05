@@ -2,43 +2,56 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title>Test</title>
+    <title>Hessed</title>
+    <meta name=viewport content="width=device-width,initial-scale=1">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
     <!--    <link th:href="@{/css/main.css}" rel="stylesheet" />-->
     <!--    <script type="text/javascript" th:src="@{/js/main.js}"></script>-->
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
 </head>
 <style>
-    body {
-        color: #666;
-        font: 14px/24px "Open Sans", "HelveticaNeue-Light", "Helvetica Neue Light", "Helvetica Neue", Helvetica, Arial, "Lucida Grande", Sans-Serif;
-    }
+    /*body {*/
+    /*    color: #666;*/
+    /*    font: 14px/24px "Open Sans", "HelveticaNeue-Light", "Helvetica Neue Light", "Helvetica Neue", Helvetica, Arial, "Lucida Grande", Sans-Serif;*/
+    /*}*/
 
     div {
         width: 100%;
-        height: 500px;
+        /*height: 100%;*/
+        /*height: 300px;*/
         position: relative;
     }
 
+    div.top {
+        height: 50%;
+    }
+
+    div.bottom {
+        height: 50%;
+    }
+
     div.left {
-        width: 60%;
+        width: 50%;
+        height: 50%;
         float: left;
         position: relative;
         padding: 10px;
     }
 
     div.right {
-        width: 35%;
+        width: 50%;
         float: right;
         position: relative;
         padding: 10px;
     }
 
     div.right-1 {
-        height: 50%;
+        height: 25%;
     }
 
     div.right-2 {
-        height: 50%;
+        height: 25%;
     }
 
     table {
@@ -87,61 +100,239 @@
         border-bottom-right-radius: 6px;
     }
 
-    div.btn-right-area {
+    /*div.btn-right-area {*/
+    /*    float: right;*/
+    /*}*/
+
+    body{
+        color: #666;
+        font: 14px/24px "Open Sans", "HelveticaNeue-Light", "Helvetica Neue Light", "Helvetica Neue", Helvetica, Arial, "Lucida Grande", Sans-Serif;
+        margin: 1% 10%;
+    }
+    input{
+        border-style: groove;
+        /*width: 200px;*/
+    }
+    ul{
+        list-style-type: none;
+    }
+    button{
+        border-style: groove;
+    }
+    .shadow{
+        box-shadow: 3px 7px 7px rgba(0, 0, 0, 0.03);
+    }
+    h1{
+        text-align: center;
+        font-weight: 900;
+        margin: 2.5rem 0 1.5rem;
+    }
+    .priority1{
+        color: #FF5733;
+    }
+    .priority2{
+        color: #FFC300;
+    }
+    .priority3{
+        color: #2980B9;
+    }
+    .add-btn{
+        background-color: #6495ED;
         float: right;
+        color: white;
+        width: 30%;
+    }
+    #add-btn-div{
+        height: 40px;
+        margin: 3px;
+    }
+    .todo-div{
+        margin: 2px 0px;
+        border: 2px solid #adb5bd;
+        border-radius: 8px;
+        padding: 10px;
+    }
+    .todo-btn{
+        margin: 5px 10px;
+    }
+    /* check box */
+    .custom-control-label::before,
+    .custom-control-label::after {
+        width: 1.25rem;
+        height: 1.25rem;
+    }
+    .todo-header{
+        height: 40px;
+        border-bottom: 1px solid #bdc3c7;
+    }
+    .todo-header-item{
+        float: left;
+    }
+    .title{
+        padding-left: 10px;
+    }
+    .todo-desc{
+        padding: 10px;
+        color: #787878;
+    }
+    .dead-line-date{
+        top: 0.25rem;
+        font-size: 0.85rem;
+        color: #2C2C2C;
+    }
+    .tab_list{
+        display: table;
+        table-layout: fixed;
+        width: 100%;
+    }
+    .tab_list .item {
+        display: table-cell;
+        text-align: center;
+        vertical-align: middle;
+    }
+    /*.todo-display-none{*/
+    /*    display: none;*/
+    /*}*/
+    .todo-done-text{
+        text-decoration: line-through;
+        color: #999999;
+    }
+
+    /* 페이징 처리 */
+    #pagination-demo{
+        display: inline-block;
+        margin-bottom: 1.75em;
+    }
+    #pagination-demo li{
+        display: inline-block;
+    }
+
+    .page-content{
+        background: #eee;
+        display: inline-block;
+        padding: 10px;
+        width: 100%;
+        max-width: 660px;
+    }
+    #pagination-btn{
+        margin: 20px auto;
+        width: 200px;
+    }
+    .time-over{
+        font-size: 0.7rem;
+        color: #FF5733;
     }
 </style>
 <body>
-<!--<p th:text="'테스트 ' + ${data}">테스트 중</p>-->
-<input type="text" id="title" value="부르신 곳에서">
-<button type="button" id="getAlbum">조회</button>
-<button type="button" id="downloadAlbumList">다운로드</button>
-<button type="button" id="addRow">+</button>
-<button type="button" id="delRow">-</button>
+<!--<div class="btn-right-area">-->
+    <input type="text" id="title" value="부르신 곳에서">
+    <button type="button" id="getAlbum" class="btn btn-outline-primary btn-sm">조회</button>
+    <button type="button" id="downloadAlbumList" class="btn btn-outline-success btn-sm">다운로드</button>
+    <button type="button" id="addRow" class="btn btn-outline-secondary btn-sm">+</button>
+    <button type="button" id="delRow" class="btn btn-outline-dark btn-sm">-</button>
+<!--</div>-->
 <div>
-    <div class="left">
-        <!--        <div class="btn-right-area">-->
-        <!--            -->
-        <!--        </div>-->
-        <table>
-            <thead>
-            <tr>
-                <th></th>
-                <th>앨범명</th>
-                <th>가수</th>
-                <th>발매일</th>
-            </tr>
-            </thead>
-            <tbody id="listMainAlbum"></tbody>
-        </table>
-    </div>
-    <div class="right">
-        <div class="right-1">
-            <button type="button" id="addDunamisRow">+</button>
-            <table>
-                <thead>
-                <tr>
-                    <th></th>
-                    <th>앨범명</th>
-                    <th>가수</th>
-                </tr>
-                </thead>
-                <tbody id="listSubAlbum"></tbody>
-            </table>
+    <div class="top">
+        <!--todo-->
+        <div id="todo-list">
+            <div class="todo-div todo-display-none" id="todo-div0">
+<!--                <ul>-->
+<!--                    <li>-->
+<!--                        <div class="todo-header">-->
+<!--                            <div class="custom-control form-control-lg custom-checkbox todo-header-item col-sm-7">-->
+<!--                                &lt;!&ndash;                            <input type="checkbox" class="custom-control-input todo-header-item" id="customCheck0">&ndash;&gt;-->
+<!--                                <label class="custom-control-label todo-header-item" for="customCheck0"><h6 class="title title0">제목&lt;!&ndash;제목&ndash;&gt;</h6></label>-->
+<!--                                &lt;!&ndash;                    <span class="time-over todo-display-none" id="time-over0">&nbsp;(기한이 지났습니다.)</span>&ndash;&gt;-->
+<!--                            </div>-->
+<!--                            <div style="margin-top:4px;">-->
+<!--                                <span class="">가수</span>-->
+<!--                            </div>-->
+<!--                            <span class="todo-header-item col-sm-2">앨범명</span>-->
+<!--                            <span class="todo-header-item col-sm-2">발매일</span>-->
+<!--                        </div>-->
+<!--                    </li>-->
+<!--                </ul>-->
+                <div>
+                    <div class="todo-header">
+                        <ul class="tab_list">
+                            <input type="checkbox" id="scales" name="scales" checked>
+                            <li class="item">
+                                <label class="custom-control-label todo-header-item" for=""><h6 class="title">safsdafsda</h6></label>
+                            </li>
+                            <li class="item">
+                                fasfdasfdsafasdf
+                            </li>
+                            <li class="item">
+                                fasfdasfdsafasdf
+                            </li>
+                        </ul>
+                        <ul class="tab_list">
+                            <li class="item">
+                                safsdafsda
+                            </li>
+                            <li class="item">
+                                fasfdasfdsafasdf
+                            </li>
+                        </ul>
+                    </div>
+
+                </div>
+                <!--            <div class="todo-desc desc0">-->
+                <!--                &lt;!&ndash; 설명 &ndash;&gt;-->
+                <!--            </div>-->
+                <!--            <div class="todo-btn">-->
+                <!--                <button type="button" class="btn btn-outline-primary" data-toggle="modal" data-target="#updateModal" onclick="loadTask(0);">수정</button>-->
+                <!--                <button type="button" class="btn btn-outline-dark" onclick="deleteTodo(0);">삭제</button>-->
+                <!--            </div>-->
+            </div>
         </div>
-        <div class="right-2">
-            <table>
-                <thead>
-                <tr>
-                    <th></th>
-                    <th>앨범명</th>
-                    <th>가수</th>
-                </tr>
-                </thead>
-                <tbody id="listDunamisAlbum"></tbody>
-            </table>
-        </div>
+        <!--todo-->
     </div>
+<!--    <div class="bottom">-->
+<!--        <div class="left">-->
+<!--            &lt;!&ndash;        <div class="btn-right-area">&ndash;&gt;-->
+<!--            &lt;!&ndash;            &ndash;&gt;-->
+<!--            &lt;!&ndash;        </div>&ndash;&gt;-->
+<!--            <table>-->
+<!--                <thead>-->
+<!--                <tr>-->
+<!--                    <th></th>-->
+<!--                    <th>앨범명</th>-->
+<!--                    <th>가수</th>-->
+<!--                    <th>발매일</th>-->
+<!--                </tr>-->
+<!--                </thead>-->
+<!--                <tbody id="listMainAlbum"></tbody>-->
+<!--            </table>-->
+<!--        </div>-->
+<!--        <div class="right">-->
+<!--            <div class="right-1">-->
+<!--                <button type="button" id="addDunamisRow">+</button>-->
+<!--                <table>-->
+<!--                    <thead>-->
+<!--                    <tr>-->
+<!--                        <th></th>-->
+<!--                        <th>앨범명</th>-->
+<!--                        <th>가수</th>-->
+<!--                    </tr>-->
+<!--                    </thead>-->
+<!--                    <tbody id="listSubAlbum"></tbody>-->
+<!--                </table>-->
+<!--            </div>-->
+<!--            <div class="right-2">-->
+<!--                <table>-->
+<!--                    <thead>-->
+<!--                    <tr>-->
+<!--                        <th></th>-->
+<!--                        <th>앨범명</th>-->
+<!--                        <th>가수</th>-->
+<!--                    </tr>-->
+<!--                    </thead>-->
+<!--                    <tbody id="listDunamisAlbum"></tbody>-->
+<!--                </table>-->
+<!--            </div>-->
+<!--        </div>-->
+<!--    </div>-->
 </div>
 </body>
 </html>
@@ -235,8 +426,10 @@
                         innerHTML += '<td>' + album.title + '</td>';
                         innerHTML += '<td>' + album.singer + '</td>';
                         innerHTML += '<td>' + album.date + '</td>';
-                        // innerHTML +=    '<td>' + album.lyric.replaceAll("\n", "<br>") + '</td>';
                         innerHTML += '</tr>';
+
+                        // $('.title.title0').text(album.title);
+                        // $('.todo-desc.desc0').text(album.lyrics.replaceAll("\n", "<br>"));
                     });
 
                     $("#listMainAlbum").append(innerHTML);
