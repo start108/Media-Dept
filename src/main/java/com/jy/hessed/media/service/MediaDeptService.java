@@ -50,12 +50,14 @@ public class MediaDeptService {
 
                 String title = list.select("a[class=tit_area]").text();
                 String singer = list.select("span[class=name]").select("a").text();
+                String albumName = list.select("a[class=album]").text();
                 String date = list.select("time[class=date]").text();
-                String lyrics = list.select("p[class=lyrics]").html();
+                String lyrics = list.select("p[class=lyrics]").html().equals("") ? "가사가 존재하지 않습니다." : list.select("p[class=lyrics]").html();
                 // String base64Image = list.select("a.jacket_area.music_thumb._sap_trigger img").first().attr("src");
 
                 album.put("title", title);
                 album.put("singer", singer);
+                album.put("albumName", albumName);
                 album.put("date", date);
                 album.put("lyrics", lyrics);
 
@@ -74,7 +76,7 @@ public class MediaDeptService {
         return MediaDTO.builder().build();
     }
 
-    public MediaDTO makePpt(Map<String, Object> hessed) {
+    public MediaDTO makePpt(List<Map<String, Object>> hessed) {
 
         // PptUtil.getBox();
         PptUtil.makePpt(hessed);

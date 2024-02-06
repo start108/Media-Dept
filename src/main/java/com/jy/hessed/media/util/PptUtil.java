@@ -15,11 +15,12 @@ import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.List;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 @Slf4j
 public class PptUtil {
 
-    public static void makePpt(Map<String, Object> praise) {
+    public static void makePpt(List<Map<String, Object>> praise) {
 
         /** Get date to set file name **/
         LocalDate now = LocalDate.now();
@@ -39,7 +40,7 @@ public class PptUtil {
             XSLFSlideLayout defaultSlideLayout = defaultSlideTemplate.getSlideLayout();
 
             /** Create Hessed Praise PPT **/
-            List<Map<String, Object>> hessedPpt = (List<Map<String, Object>>) praise.get("hessed");
+            List<Map<String, Object>> hessedPpt = praise.stream().filter(hessedAlbum -> "N".equals(hessedAlbum.get("dunamisYn"))).collect(Collectors.toList());
 
             hessedPpt.forEach(hessedAlbum -> {
 
@@ -47,28 +48,28 @@ public class PptUtil {
                         .filter(album -> "title".equals(album.getKey()) || "lyrics".equals(album.getKey()))
                         .forEach(albumDetail -> {
 
-                    if ("title".equals(albumDetail.getKey())) {
+                            if ("title".equals(albumDetail.getKey())) {
 
-                        XSLFSlide titleSlide = ppt.createSlide(defaultSlideLayout);
-                        Rectangle2D titleTextBox = new Rectangle2D.Double(0.0, 23.053858267716535, 960.0, 50.892204724409446); // new Rectangle2D.Double(0.0, 8.0, 960.0, 50.892204724409446)
-                        String hessedPraiseTitle = albumDetail.getValue().toString();
+                                XSLFSlide titleSlide = ppt.createSlide(defaultSlideLayout);
+                                Rectangle2D titleTextBox = new Rectangle2D.Double(0.0, 23.053858267716535, 960.0, 50.892204724409446); // new Rectangle2D.Double(0.0, 8.0, 960.0, 50.892204724409446)
+                                String hessedPraiseTitle = albumDetail.getValue().toString();
 
-                        createHessedSlide(titleSlide, titleTextBox, hessedPraiseTitle, "hessed");
-                    } else {
+                                createHessedSlide(titleSlide, titleTextBox, hessedPraiseTitle, "hessed");
+                            } else {
 
-                        String hessedPraiseLyric = albumDetail.getValue().toString();
-                        List<String> lyricsPairsList = lyricsPairs(hessedPraiseLyric);
+                                String hessedPraiseLyric = albumDetail.getValue().toString();
+                                List<String> lyricsPairsList = lyricsPairs(hessedPraiseLyric);
 
-                        for (String lyrics : lyricsPairsList) {
-                            XSLFSlide lyricSlide = ppt.createSlide(defaultSlideLayout);
-                            Rectangle2D lyricsTextBox = new Rectangle2D.Double(0.0, 1.2429133858267716, 960.0, 94.51409448818897); // new Rectangle2D.Double(0.0, -10.0, 960.0, 94.51409448818897)
+                                for (String lyrics : lyricsPairsList) {
+                                    XSLFSlide lyricSlide = ppt.createSlide(defaultSlideLayout);
+                                    Rectangle2D lyricsTextBox = new Rectangle2D.Double(0.0, 1.2429133858267716, 960.0, 94.51409448818897); // new Rectangle2D.Double(0.0, -10.0, 960.0, 94.51409448818897)
 
-                            createHessedSlide(lyricSlide, lyricsTextBox, lyrics, "hessed");
-                        }
+                                    createHessedSlide(lyricSlide, lyricsTextBox, lyrics, "hessed");
+                                }
 
-                        lyricsPairsList.clear();
-                    }
-                });
+                                lyricsPairsList.clear();
+                            }
+                        });
             });
 
             /** PPT Template Slide(Offering) Load **/
@@ -76,33 +77,36 @@ public class PptUtil {
             XSLFSlideLayout offeringSlideLayout = offeringSlideTemplate.getSlideLayout();
 
             /** Create Dunamis Praise PPT **/
-            Map<String, Object> dunamisPpt = (Map<String, Object>) praise.get("dunamis");
+            List<Map<String, Object>> dunamisPpt = praise.stream().filter(dunamisAlbum -> "Y".equals(dunamisAlbum.get("dunamisYn"))).collect(Collectors.toList());
 
-            dunamisPpt.entrySet().stream()
-                    .filter(album -> "title".equals(album.getKey()) || "lyrics".equals(album.getKey()))
-                    .forEach(albumDetail -> {
+            dunamisPpt.forEach(dunamisAlbum -> {
 
-                if ("title".equals(albumDetail.getKey())) {
+                dunamisAlbum.entrySet().stream()
+                        .filter(album -> "title".equals(album.getKey()) || "lyrics".equals(album.getKey()))
+                        .forEach(albumDetail -> {
 
-                    XSLFSlide titleSlide = ppt.createSlide(offeringSlideLayout);
-                    Rectangle2D titleTextBox = new Rectangle2D.Double(448.0, 489.10779527559055, 512.0, 50.892204724409446);
-                    String dunamisPraiseTitle = albumDetail.getValue().toString();
+                            if ("title".equals(albumDetail.getKey())) {
 
-                    createHessedSlide(titleSlide, titleTextBox, dunamisPraiseTitle, "dunamis");
-                } else {
+                                XSLFSlide titleSlide = ppt.createSlide(offeringSlideLayout);
+                                Rectangle2D titleTextBox = new Rectangle2D.Double(448.0, 489.10779527559055, 512.0, 50.892204724409446);
+                                String dunamisPraiseTitle = albumDetail.getValue().toString();
 
-                    String dunamisPraiseLyric = albumDetail.getValue().toString();
-                    List<String> lyricsPairsList = lyricsPairs(dunamisPraiseLyric);
+                                createHessedSlide(titleSlide, titleTextBox, dunamisPraiseTitle, "dunamis");
+                            } else {
 
-                    for (String lyrics : lyricsPairsList) {
-                        XSLFSlide lyricSlide = ppt.createSlide(offeringSlideLayout);
-                        Rectangle2D lyricsTextBox = new Rectangle2D.Double(375.0, 445.48590551181104, 585.0, 94.51409448818897); // new Rectangle2D.Double(375.0, 433.0, 650.0, 94.51409448818897)
+                                String dunamisPraiseLyric = albumDetail.getValue().toString();
+                                List<String> lyricsPairsList = lyricsPairs(dunamisPraiseLyric);
 
-                        createHessedSlide(lyricSlide, lyricsTextBox, lyrics, "dunamis");
-                    }
+                                for (String lyrics : lyricsPairsList) {
+                                    XSLFSlide lyricSlide = ppt.createSlide(offeringSlideLayout);
+                                    Rectangle2D lyricsTextBox = new Rectangle2D.Double(375.0, 445.48590551181104, 585.0, 94.51409448818897); // new Rectangle2D.Double(375.0, 433.0, 650.0, 94.51409448818897)
 
-                    lyricsPairsList.clear();
-                }
+                                    createHessedSlide(lyricSlide, lyricsTextBox, lyrics, "dunamis");
+                                }
+
+                                lyricsPairsList.clear();
+                            }
+                        });
             });
 
             /** Create Final PPT **/
@@ -120,9 +124,9 @@ public class PptUtil {
         String lyrics = parameter;
         String[] lines = lyrics.split("\\n");
 
-        lines = Arrays.stream(lines)
-                .filter(line -> !regexCheck(line))
-                .toArray(String[]::new);
+//        lines = Arrays.stream(lines)
+//                .map(line -> removeSpecial(line))
+//                .toArray(String[]::new);
 
         for (int i = 0; i < lines.length; i += 2) {
             if (i + 1 < lines.length) {
@@ -166,6 +170,10 @@ public class PptUtil {
         } else {
             paragraph.setTextAlign(TextParagraph.TextAlign.RIGHT);
         }
+    }
+
+    private static String removeSpecial(String sentence) {
+        return sentence.replaceAll("[^a-zA-Z0-9\\s]", "");
     }
 
     private static boolean regexCheck(String sentence) {
