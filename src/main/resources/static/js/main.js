@@ -7,7 +7,17 @@ const media = {
     },
     getAlbum: function () {
 
+        if($("#title").val() === '') {
+            alert("검색어를 입력해주세요.");
+            return;
+        }
+
         this.call({title: $("#title").val()}, '/album', 'GET', (data) => {
+
+            if(this.isEmpty(data.albumList)) {
+                alert("조회된 결과가 없습니다.");
+                return;
+            }
 
             this.albumList = data.albumList;
 
@@ -130,6 +140,8 @@ const media = {
 
         current.target.parentNode.nextElementSibling.remove();
         current.target.parentNode.remove();
+
+        document.getElementById("title").focus();
     },
     delRow: function (current) {
 
