@@ -12,8 +12,9 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
-import java.util.*;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
@@ -43,7 +44,6 @@ public class PptUtil {
             List<Map<String, Object>> hessedPpt = praise.stream().filter(hessedAlbum -> "N".equals(hessedAlbum.get("dunamisYn"))).collect(Collectors.toList());
 
             hessedPpt.forEach(hessedAlbum -> {
-
                 hessedAlbum.entrySet().stream()
                         .filter(album -> "title".equals(album.getKey()) || "lyrics".equals(album.getKey()))
                         .forEach(albumDetail -> {
@@ -80,7 +80,6 @@ public class PptUtil {
             List<Map<String, Object>> dunamisPpt = praise.stream().filter(dunamisAlbum -> "Y".equals(dunamisAlbum.get("dunamisYn"))).collect(Collectors.toList());
 
             dunamisPpt.forEach(dunamisAlbum -> {
-
                 dunamisAlbum.entrySet().stream()
                         .filter(album -> "title".equals(album.getKey()) || "lyrics".equals(album.getKey()))
                         .forEach(albumDetail -> {

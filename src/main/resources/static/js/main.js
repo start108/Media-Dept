@@ -30,14 +30,14 @@ const media = {
 
             data.albumList.forEach((album, index) => {
 
-                innerHTML +=    '<tr class="musicContent scrollable" data-index="' + index + '" ondblclick="media.addRow(this)">';
+                innerHTML +=    '<tr class="musicContent scrollable" data-index="' + index + '">';
                 innerHTML +=        '<td><button type="button" id="btnContentToggle" class="btn btn-outline-secondary btn-sm" onclick="media.toggleRow(this)">+</button></td>';
                 innerHTML +=        '<td style="text-align: left;">' + album.title + '</td>';
                 innerHTML +=        '<td>' + album.singer + '</td>';
                 innerHTML +=        '<td style="text-align: left;">' + album.albumName + '</td>';
                 innerHTML +=        '<td>' + album.date + '</td>';
                 innerHTML +=    '</tr>';
-                innerHTML +=    '<tr class="hiddenLyrics scrollable">';
+                innerHTML +=    '<tr class="hiddenLyrics">';
                 innerHTML +=        '<td colspan="6">' + album.lyrics.replaceAll("\n", "<br>") + '</td>';
                 innerHTML +=    '</tr>';
             });
@@ -47,12 +47,21 @@ const media = {
 
             musicList.style.display = 'block';
             musicList.insertAdjacentHTML('beforeend', innerHTML);
+
+            const contentRows = document.querySelectorAll('#tbyContent tr');
+            contentRows.forEach(row => {
+
+                const cells = row.querySelectorAll('td:not(:first-child)');
+
+                cells.forEach(cell => cell.addEventListener('dblclick', (e) => media.addRow(e)));
+            });
         });
     },
     addRow: function (current) {
 
-        const rowIndex = current.getAttribute('data-index');
-        const downLoadList = document.getElementById("downLoadList");
+        const rowIndex = current.target.parentNode.getAttribute('data-index');
+        const downloadList = document.getElementById("downloadList");
+        const downloadBtn = document.getElementById("downloadBtn");
 
         let innerHTML = '';
 
@@ -90,8 +99,9 @@ const media = {
                 }
             });
 
-            downLoadList.style.display = 'block';
-            downLoadList.insertAdjacentHTML('beforeend', innerHTML);
+            downloadList.style.display = 'block';
+            downloadBtn.style.display = 'block';
+            downloadList.insertAdjacentHTML('beforeend', innerHTML);
 
         } else {
             this.albumList.forEach((album, index) => {
@@ -118,7 +128,8 @@ const media = {
             tbyDownload.insertAdjacentHTML('beforeend', innerHTML);
         }
 
-        current.remove();
+        current.target.parentNode.nextElementSibling.remove();
+        current.target.parentNode.remove();
     },
     delRow: function (current) {
 
@@ -135,8 +146,8 @@ const media = {
         } else {
             current.parentNode.parentNode.remove();
 
-            const downloadLastRow = document.querySelector('#tbDownload tbody tr:last-child');
-            downloadLastRow.querySelector('input[type="radio"]').checked = true;
+            // const downloadLastRow = document.querySelector('#tbDownload tbody tr:last-child');
+            // downloadLastRow.querySelector('input[type="radio"]').checked = true;
         }
     },
     downloadAlbum: function () {
@@ -147,23 +158,6 @@ const media = {
         }
 
         this.call(JSON.stringify(this.albumHessedList), '/download', 'POST', (data) => alert("다운로드 되었습니다."));
-    },
-    call: function (data, url, type, callback) {
-
-        $.ajax({
-            data: data,
-            contentType: 'application/json',
-            url: url,
-            type: type,
-            success: (data) => {
-                if (typeof callback === 'function') {
-                    callback(data);
-                }
-            },
-            error: (error) => {
-                alert("오류가 발생하였습니다.");
-            }
-        });
     },
     changeRadio: function (current) {
 
@@ -199,13 +193,6 @@ const media = {
             this.getAlbum();
         }
     },
-    // selectRow: function (current) {
-    //
-    //     const rowIndex = Number(current.getAttribute('data-index'));
-    //     const row = document.getElementsByClassName('musicContent')[rowIndex];
-    //
-    //     row.classList.add('selectedRow');
-    // },
     isEmpty: function (value) {
 
         if (Array.isArray(value) && value.length === 0 || Object.keys(value).length === 0) {
@@ -213,8 +200,30 @@ const media = {
         }
         return false;
     },
+    call: function (data, url, type, callback) {
+
+        $.ajax({
+            data: data,
+            contentType: 'application/json',
+            url: url,
+            type: type,
+            success: (data) => {
+                if (typeof callback === 'function') {
+                    callback(data);
+                }
+            },
+            error: (error) => {
+                alert("오류가 발생하였습니다.");
+            }
+        });
+    },
+    // selectRow: function (current) {
+    //
+    //     const rowIndex = Number(current.getAttribute('data-index'));
+    //     const row = document.getElementsByClassName('musicContent')[rowIndex];
+    //
+    //     row.classList.add('selectedRow');
+    // },
 };
 
-$(function () {
-    media.init();
-});
+document.addEventListener('DOMContentLoaded', () => media.init());

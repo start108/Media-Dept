@@ -7,6 +7,9 @@ spring:
   devtools:
     restart:
       enabled: true
+#  web:
+#    resources:
+#      static-locations: "classpath:/templete/"
 
 cache:
   ttl: # time to live
