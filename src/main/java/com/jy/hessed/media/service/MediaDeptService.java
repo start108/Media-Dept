@@ -21,10 +21,8 @@ import java.io.IOException;
 import java.net.URLEncoder;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.*;
 import java.util.List;
-import java.util.Map;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
@@ -167,9 +165,9 @@ public class MediaDeptService {
         String lyrics = parameter;
         String[] lines = lyrics.split("\\n");
 
-//        lines = Arrays.stream(lines)
-//                .map(line -> removeSpecial(line))
-//                .toArray(String[]::new);
+        lines = Arrays.stream(lines)
+                .map(line -> removeBracket(line))
+                .toArray(String[]::new);
 
         for (int i = 0; i < lines.length; i += 2) {
             if (i + 1 < lines.length) {
@@ -250,11 +248,8 @@ public class MediaDeptService {
         }
     }
 
-    private boolean regexCheck(String sentence) {
-
-        Pattern pattern = Pattern.compile("[!@#$%^&*(),.?\":{}|<>]");
-
-        return pattern.matcher(sentence).find();
+    private String removeBracket(String line) {
+        return line.replaceAll("\\(.*?\\)|\\.", "");
     }
 
     private void getBox() {
