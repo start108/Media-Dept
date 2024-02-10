@@ -21,9 +21,8 @@ import java.io.IOException;
 import java.net.URLEncoder;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
-import java.util.*;
 import java.util.List;
-import java.util.regex.Pattern;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -149,7 +148,7 @@ public class MediaDeptService {
             });
 
             /** Create Final PPT **/
-            ppt.write(fos);
+//            ppt.write(fos);
 
         } catch (IOException e) {
             e.printStackTrace();
@@ -204,12 +203,12 @@ public class MediaDeptService {
         Rectangle2D rectangle = null;
 
         /*
-        * Hessed Title -> (0.0, 23.053858267716535, 960.0, 50.892204724409446)
-        * Hessed Content -> (0.0, 23.053858267716535, 960.0, 50.892204724409446)
-        * Dunamis Title -> (448.0, 489.10779527559055, 512.0, 50.892204724409446)
-        * Dunamis Content -> (375.0, 433.0, 650.0, 94.51409448818897)
-        * */
-        switch(contentDiv) {
+         * Hessed Title -> (0.0, 23.053858267716535, 960.0, 50.892204724409446)
+         * Hessed Content -> (0.0, 23.053858267716535, 960.0, 50.892204724409446)
+         * Dunamis Title -> (448.0, 489.10779527559055, 512.0, 50.892204724409446)
+         * Dunamis Content -> (375.0, 433.0, 650.0, 94.51409448818897)
+         * */
+        switch (contentDiv) {
             case "hessedTitle":
 
                 rectangle = new Rectangle2D.Double(0.0, 14.053858267716535, 960.0, 50.892204724409446);
