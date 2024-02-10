@@ -111,13 +111,13 @@ public class MediaDeptService {
                             String value = albumDetail.getValue().toString();
 
                             if ("title".equals(albumDetail.getKey())) {
-                                createSlide(ppt,"hessed", "hessedTitle", value);
+                                createSlide(ppt, "hessedTitle", value);
                             } else {
 
                                 List<String> lyricsPairsList = lyricsPairs(value);
 
                                 for (String lyrics : lyricsPairsList) {
-                                    createSlide(ppt, "hessed", "hessedContent", lyrics);
+                                    createSlide(ppt, "hessedContent", lyrics);
                                 }
 
                                 lyricsPairsList.clear();
@@ -136,13 +136,13 @@ public class MediaDeptService {
                             String value = albumDetail.getValue().toString();
 
                             if ("title".equals(albumDetail.getKey())) {
-                                createSlide(ppt,"dunamis", "dunamisTitle", value);
+                                createSlide(ppt, "dunamisTitle", value);
                             } else {
 
                                 List<String> lyricsPairsList = lyricsPairs(value);
 
                                 for (String lyrics : lyricsPairsList) {
-                                    createSlide(ppt,"dunamis", "dunamisContent", lyrics);
+                                    createSlide(ppt, "dunamisContent", lyrics);
                                 }
 
                                 lyricsPairsList.clear();
@@ -183,71 +183,71 @@ public class MediaDeptService {
         return lyricsPairsList;
     }
 
-    private void createSlide(XMLSlideShow ppt, String dept, String contentDiv, String value) {
+    private void createSlide(XMLSlideShow ppt, String contentDiv, String value) {
 
-        if(contentDiv.contains("hessed")) {
-            System.out.println("문자열 포함됨");
-        } else {
-            System.out.println("문자열 포함되지 않음");
+        /** PPT Template Slide Load **/
+        XSLFSlide templete = contentDiv.contains("hessed") ? ppt.getSlides().get(0) : ppt.getSlides().get(1);
+        XSLFSlideLayout slideLayout = templete.getSlideLayout();
+        XSLFSlide slide = ppt.createSlide(slideLayout);
+
+        slide.clear();
+
+        /** Create Dimmed Box **/
+        if (contentDiv.contains("hessed")) {
+
+            XSLFTextBox dimmedBox = slide.createTextBox();
+
+            dimmedBox.setAnchor(new Rectangle2D.Double(0.0, 0.0, 960.0, 97.0)); // new Rectangle2D.Double(0.0, -12.0, 960.0, 105.0)
+            dimmedBox.setFillColor(new Color(13, 13, 13));
         }
 
-//        /** PPT Template Slide Load **/
-//        XSLFSlide templete = "hessed".equals(dept) ? ppt.getSlides().get(0) : ppt.getSlides().get(1);
-//        XSLFSlideLayout slideLayout = templete.getSlideLayout();
-//        XSLFSlide slide = ppt.createSlide(slideLayout);
-//
-//        slide.clear();
-//
-//        /** Create Dimmed Box **/
-//        if ("hessed".equals(dept)) {
-//
-//            XSLFTextBox dimmedBox = slide.createTextBox();
-//
-//            dimmedBox.setAnchor(new Rectangle2D.Double(0.0, 0.0, 960.0, 97.0)); // new Rectangle2D.Double(0.0, -12.0, 960.0, 105.0)
-//            dimmedBox.setFillColor(new Color(13, 13, 13));
-//        }
-//
-//        /** Create Text Box **/
-//        XSLFTextBox textBox = slide.createTextBox();
-//        Rectangle2D rectangle = null;
-//
-//        switch(contentDiv) {
-//            case "hessedTitle":
-//
-//                rectangle = new Rectangle2D.Double(0.0, 23.053858267716535, 960.0, 50.892204724409446); // new Rectangle2D.Double(0.0, 8.0, 960.0, 50.892204724409446)
-//                break;
-//            case "hessedContent":
-//
-//                rectangle = new Rectangle2D.Double(0.0, 1.2429133858267716, 960.0, 94.51409448818897); // new Rectangle2D.Double(0.0, -10.0, 960.0, 94.51409448818897)
-//                break;
-//            case "dunamisTitle":
-//
-//                rectangle = new Rectangle2D.Double(448.0, 489.10779527559055, 512.0, 50.892204724409446);
-//                break;
-//            case "dunamisContent":
-//
-//                rectangle = new Rectangle2D.Double(375.0, 445.48590551181104, 585.0, 94.51409448818897); // new Rectangle2D.Double(375.0, 433.0, 650.0, 94.51409448818897)
-//                break;
-//            default:
-//                break;
-//        }
-//
-//        textBox.setAnchor(rectangle);
-//        textBox.setTextAutofit(XSLFTextBox.TextAutofit.NONE);
-//        textBox.setWordWrap(true);
-//
-//        XSLFTextParagraph paragraph = textBox.addNewTextParagraph();
-//        XSLFTextRun run = paragraph.addNewTextRun();
-//
-//        run.setText(value);
-//        run.setFontFamily(MediaConstants.FONT_FAMILY);
-//        run.setFontSize(MediaConstants.FONT_SIZE);
-//
-//        if ("hessed".equals(dept)) {
-//            paragraph.setTextAlign(TextParagraph.TextAlign.CENTER);
-//        } else {
-//            paragraph.setTextAlign(TextParagraph.TextAlign.RIGHT);
-//        }
+        /** Create Text Box **/
+        XSLFTextBox textBox = slide.createTextBox();
+        Rectangle2D rectangle = null;
+
+        /*
+        * Hessed Title -> (0.0, 23.053858267716535, 960.0, 50.892204724409446)
+        * Hessed Content -> (0.0, 23.053858267716535, 960.0, 50.892204724409446)
+        * Dunamis Title -> (448.0, 489.10779527559055, 512.0, 50.892204724409446)
+        * Dunamis Content -> (375.0, 433.0, 650.0, 94.51409448818897)
+        * */
+        switch(contentDiv) {
+            case "hessedTitle":
+
+                rectangle = new Rectangle2D.Double(0.0, 14.053858267716535, 960.0, 50.892204724409446);
+                break;
+            case "hessedContent":
+
+                rectangle = new Rectangle2D.Double(0.0, -8.2429133858267716, 960.0, 94.51409448818897);
+                break;
+            case "dunamisTitle":
+
+                rectangle = new Rectangle2D.Double(448.0, 489.10779527559055, 512.0, 50.892204724409446);
+                break;
+            case "dunamisContent":
+
+                rectangle = new Rectangle2D.Double(375.0, 445.48590551181104, 585.0, 94.51409448818897);
+                break;
+            default:
+                break;
+        }
+
+        textBox.setAnchor(rectangle);
+        textBox.setTextAutofit(XSLFTextBox.TextAutofit.NONE);
+        textBox.setWordWrap(true);
+
+        XSLFTextParagraph paragraph = textBox.addNewTextParagraph();
+        XSLFTextRun run = paragraph.addNewTextRun();
+
+        run.setText(value);
+        run.setFontFamily(MediaConstants.FONT_FAMILY);
+        run.setFontSize(MediaConstants.FONT_SIZE);
+
+        if (contentDiv.contains("hessed")) {
+            paragraph.setTextAlign(TextParagraph.TextAlign.CENTER);
+        } else {
+            paragraph.setTextAlign(TextParagraph.TextAlign.RIGHT);
+        }
     }
 
     private boolean regexCheck(String sentence) {
