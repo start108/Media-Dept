@@ -148,7 +148,7 @@ public class MediaDeptService {
             });
 
             /** Create Final PPT **/
-//            ppt.write(fos);
+            ppt.write(fos);
 
         } catch (IOException e) {
             e.printStackTrace();
@@ -253,7 +253,7 @@ public class MediaDeptService {
 
     private void getBox() {
 
-        try (FileInputStream fis = new FileInputStream("/Users/cjy/2024 청년부(Test).pptx")) {
+        try (FileInputStream fis = new FileInputStream(MediaConstants.FILE_PATH + "2024 청년부(Test)" + MediaConstants.EXTENSION)) {
 
             XMLSlideShow ppt = new XMLSlideShow(fis);
 

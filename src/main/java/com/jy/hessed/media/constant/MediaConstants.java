@@ -12,7 +12,7 @@ public class MediaConstants {
 
     public static final String DATE_FORMAT = "yyyy.MM.dd";
 
-    public static final String FILE_PATH = "/Users/cjy/";
+    public static final String FILE_PATH = "/Users/cjy/project-collection/";
 
     public static final String FILE_PATH_TEST = "classpath:";
 
